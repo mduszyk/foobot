@@ -7,5 +7,6 @@ type Receiver interface {
 type Proto interface {
     Send(addr string, msg string)
     Register(r Receiver)
+    Run()
 }
 

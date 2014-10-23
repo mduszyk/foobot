@@ -10,7 +10,8 @@ import (
 func main() {
     irc := proto.NewIrcProto()
     a := agent.NewAgent()
-    a.AttachProto(irc)
-    irc.Run()
+    a.Attach(irc)
+    a.Run()
+
     /* test.RunIrcBot() */
 }

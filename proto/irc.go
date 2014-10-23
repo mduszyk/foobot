@@ -2,6 +2,7 @@ package proto
 
 import (
     "fmt"
+    "strings"
     "crypto/tls"
 	"fuzzywookie/foobot/agent"
 	irc "github.com/fluffle/goirc/client"
@@ -25,8 +26,9 @@ func NewIrcProto() *IrcProto {
     cfg.SSLConfig.InsecureSkipVerify = true
     cfg.Server = "cube.mdevel.net:6697"
     cfg.NewNick = func(n string) string { return n + "^" }
+    cfg.Flood = true
 
-	// create new IRC connection
+    // create new IRC connection
     c := irc.Client(cfg)
 	c.EnableStateTracking()
 
@@ -60,7 +62,9 @@ func (proto *IrcProto) Run() {
 }
 
 func (proto *IrcProto) Send(addr string, msg string) {
-    proto.conn.Privmsg(addr, msg)
+    for _, e := range strings.Split(msg, "\n") {
+        proto.conn.Privmsg(addr, e)
+    }
 }
 
 func (proto *IrcProto) Register(r agent.Receiver) {
