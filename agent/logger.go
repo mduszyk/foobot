@@ -1,3 +1,4 @@
+// TODO make buffer to be cyclic buffer with fixed size
 package agent
 
 import "log"
@@ -24,11 +25,9 @@ type Log interface {
 }
 
 type logNull struct{}
-
 func (l *logNull) Printf(format string, v ...interface{}) {}
 
 var disabled logNull
-
 var trace = log.New(&buf, "TRACE: ", log.Ldate | log.Ltime | log.Lshortfile)
 var info = log.New(&buf, "INFO : ", log.Ldate | log.Ltime | log.Lshortfile)
 var warn = log.New(&buf, "WARN : ", log.Ldate | log.Ltime | log.Lshortfile)
@@ -68,6 +67,7 @@ func LogLevel(l int) {
 }
 
 func LogTail(n int) string {
+    // TODO 
     return buf.String()
 }
 
