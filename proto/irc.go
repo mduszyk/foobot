@@ -61,15 +61,33 @@ func (proto *IrcProto) Run() {
 	}
 }
 
-func (proto *IrcProto) Send(addr string, msg string) {
-    for _, e := range strings.Split(msg, "\n") {
+func (proto *IrcProto) Send(addr string, text string) {
+    for _, e := range strings.Split(text, "\n") {
         proto.conn.Privmsg(addr, e)
     }
 }
 
 func (proto *IrcProto) Register(r agent.Receiver) {
     handler := func(conn *irc.Conn, line *irc.Line) {
-        r.Recv(line.Target(), line.Text())
+        addr := line.Target()
+        text := line.Text()
+        chunks := strings.SplitN(text, " ", 2)
+        msg := &agent.Msg{
+            Raw: text,
+            Cmd: chunks[0],
+            Args: "",
+        }
+        if len(chunks) > 1 {
+            msg.Args = chunks[1]
+        }
+        switch {
+            default:
+                // pass message to agent
+                r.Recv(addr, msg)
+            case strings.HasPrefix(msg.Cmd, ":irc"):
+                // handle message here
+                fmt.Printf("Got irc proto command: %s", msg.Raw)
+        }
     }
 	proto.conn.HandleFunc("PRIVMSG", handler)
 }

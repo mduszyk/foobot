@@ -2,7 +2,6 @@ package agent
 
 import (
     "fmt"
-    "strings"
 )
 
 type Agent struct {
@@ -18,14 +17,14 @@ func NewAgent() *Agent {
     return agent
 }
 
-func (agent *Agent) Recv(addr string, msg string) {
+func (agent *Agent) Recv(addr string, msg *Msg) {
     var rsp string
-    chunks := strings.SplitN(msg, " ", 2)
 
-    if chunks[0] == ":sh" {
-        rsp = agent.sh.Insert(chunks[1])
-    } else {
-        rsp = "ACK: " + msg
+    switch {
+        default:
+            rsp = "ECHO: " + msg.Raw
+        case ":sh" == msg.Cmd:
+            rsp = agent.sh.Insert(msg.Args)
     }
 
     fmt.Printf("Agent addr: %s, msg: %s, rsp: %s\n", addr, msg, rsp)

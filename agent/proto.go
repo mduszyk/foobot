@@ -1,11 +1,17 @@
 package agent
 
+type Msg struct {
+    Raw string
+    Cmd string
+    Args string
+}
+
 type Receiver interface {
-    Recv(addr string, msg string)
+    Recv(addr string, msg *Msg)
 }
 
 type Proto interface {
-    Send(addr string, msg string)
+    Send(addr string, text string)
     Register(r Receiver)
     Run()
 }
