@@ -86,7 +86,7 @@ func (proto *IrcProto) Register(r agent.Receiver) {
                 r.Recv(addr, msg)
             case strings.HasPrefix(msg.Cmd, ":irc"):
                 // handle message here
-                fmt.Printf("Got irc proto command: %s", msg.Raw)
+                agent.LogTrace.Printf("Got irc proto command: %s", msg.Raw)
         }
     }
 	proto.conn.HandleFunc("PRIVMSG", handler)

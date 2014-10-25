@@ -1,7 +1,8 @@
 package agent
 
 import (
-    "fmt"
+    "strconv"
+    "strings"
 )
 
 type Agent struct {
@@ -20,14 +21,26 @@ func NewAgent() *Agent {
 func (agent *Agent) Recv(addr string, msg *Msg) {
     var rsp string
 
-    switch {
+    switch msg.Cmd {
         default:
             rsp = "ECHO: " + msg.Raw
-        case ":sh" == msg.Cmd:
+        case ":sh":
             rsp = agent.sh.Insert(msg.Args)
+        case ":log":
+            if strings.HasPrefix(msg.Args, "level") {
+                chunks := strings.SplitN(msg.Args, " ", 2)
+                LogLevelStr(chunks[1])
+                rsp = "log level " + chunks[1]
+            } else {
+                n, err := strconv.Atoi(msg.Args)
+                if err == nil {
+                    n = 1
+                }
+                rsp = LogTail(n)
+            }
     }
 
-    fmt.Printf("Agent addr: %s, msg: %s, rsp: %s\n", addr, msg, rsp)
+    LogTrace.Printf("Agent addr: %s, msg: %s", addr, msg.Raw)
     agent.proto.Send(addr, rsp)
 }
 
