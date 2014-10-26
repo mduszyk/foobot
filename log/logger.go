@@ -17,7 +17,7 @@ var levelMap = map[string]int{
     "trace": LEVEL_TRACE,
     "info": LEVEL_INFO,
     "warn": LEVEL_WARN,
-    "ERROR": LEVEL_ERROR,
+    "error": LEVEL_ERROR,
 }
 
 type Log interface {

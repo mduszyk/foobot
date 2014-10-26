@@ -3,6 +3,7 @@ package agent
 import (
     "strconv"
     "strings"
+    "reflect"
 	"fuzzywookie/foobot/log"
 )
 
@@ -48,6 +49,7 @@ func (agent *Agent) Recv(addr string, msg *Msg) {
 func (agent *Agent) Attach(proto Proto) {
     proto.Register(agent)
     agent.proto = proto
+    log.INFO.Printf("Attached proto: %s", reflect.TypeOf(proto))
 }
 
 func (agent *Agent) Run() {

@@ -2,9 +2,9 @@ package agent
 
 import(
     "io"
-    "fmt"
     "os/exec"
     "strings"
+	"fuzzywookie/foobot/log"
 )
 
 type Shell struct {
@@ -14,18 +14,20 @@ type Shell struct {
 }
 
 func NewShell() *Shell {
-    proc := exec.Command("/bin/bash")
+    shell := "/bin/bash"
+    proc := exec.Command(shell)
     in, err := proc.StdinPipe()
     if err != nil {
-        fmt.Printf("Error connecting shell stdin: %s\n", err)
+        log.ERROR.Printf("Error connecting shell stdin: %s", err)
         return nil
     }
     out, err := proc.StdoutPipe()
     if err != nil {
-        fmt.Printf("Error connecting shell stdout: %s\n", err)
+        log.ERROR.Printf("Error connecting shell stdout: %s", err)
         return nil
     }
     proc.Start()
+    log.TRACE.Printf("Started shell: %s", shell)
 
     return &Shell{
 		proc: proc,
