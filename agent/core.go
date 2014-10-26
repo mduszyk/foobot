@@ -5,6 +5,7 @@ import (
     "strings"
     "reflect"
 	"fuzzywookie/foobot/log"
+	"fuzzywookie/foobot/conf"
 )
 
 type Agent struct {
@@ -28,6 +29,12 @@ func (agent *Agent) Recv(addr string, msg *Msg) {
             rsp = "ECHO: " + msg.Raw
         case ":sh":
             rsp = agent.sh.Insert(msg.Args)
+        case ":conf":
+            if len(msg.Args) == 0 {
+                rsp = conf.Dump()
+            } else {
+                rsp = msg.Args + ": " + conf.Get(msg.Args)
+            }
         case ":log":
             if strings.HasPrefix(msg.Args, "level") {
                 chunks := strings.SplitN(msg.Args, " ", 2)

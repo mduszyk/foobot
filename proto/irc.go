@@ -4,6 +4,7 @@ import (
     "strings"
     "crypto/tls"
 	"fuzzywookie/foobot/log"
+	"fuzzywookie/foobot/conf"
 	"fuzzywookie/foobot/agent"
 	irc "github.com/fluffle/goirc/client"
 )
@@ -16,15 +17,15 @@ type IrcProto struct {
 }
 
 func NewIrcProto() *IrcProto {
-    // TODO move params to agent.conf
-    cfg := irc.NewConfig("bot1", "foobot", "foobot")
-	cfg.Version = "foobot 1.0"
-	cfg.QuitMessage = "bye"
-    cfg.Pass = "baltycka"
+    nick := conf.Get("irc.nick")
+    cfg := irc.NewConfig(nick, conf.Get("irc.ident", nick), conf.Get("irc.name", nick))
+	cfg.Version = conf.Get("irc.version", nick)
+	cfg.QuitMessage = conf.Get("irc.quitmsg", "bye")
+    cfg.Pass = conf.Get("irc.pass", "")
     cfg.SSL = true
     cfg.SSLConfig = &tls.Config{}
     cfg.SSLConfig.InsecureSkipVerify = true
-    cfg.Server = "cube.mdevel.net:6697"
+    cfg.Server = conf.Get("irc.server")
     cfg.NewNick = func(n string) string { return n + "^" }
     cfg.Flood = true
 
