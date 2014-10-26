@@ -3,6 +3,7 @@ package agent
 import (
     "strconv"
     "strings"
+	"fuzzywookie/foobot/log"
 )
 
 type Agent struct {
@@ -29,18 +30,18 @@ func (agent *Agent) Recv(addr string, msg *Msg) {
         case ":log":
             if strings.HasPrefix(msg.Args, "level") {
                 chunks := strings.SplitN(msg.Args, " ", 2)
-                LogLevelStr(chunks[1])
+                log.SetLevelStr(chunks[1])
                 rsp = "log level " + chunks[1]
             } else {
                 n, err := strconv.Atoi(msg.Args)
                 if err == nil {
                     n = 1
                 }
-                rsp = LogTail(n)
+                rsp = log.Tail(n)
             }
     }
 
-    LogTrace.Printf("Agent addr: %s, msg: %s", addr, msg.Raw)
+    log.TRACE.Printf("Agent cmd, addr: %s, msg: %s", addr, msg.Raw)
     agent.proto.Send(addr, rsp)
 }
 
@@ -50,5 +51,6 @@ func (agent *Agent) Attach(proto Proto) {
 }
 
 func (agent *Agent) Run() {
+    log.INFO.Printf("Starting agent")
     agent.proto.Run()
 }

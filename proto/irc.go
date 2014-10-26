@@ -1,9 +1,9 @@
 package proto
 
 import (
-    "fmt"
     "strings"
     "crypto/tls"
+	"fuzzywookie/foobot/log"
 	"fuzzywookie/foobot/agent"
 	irc "github.com/fluffle/goirc/client"
 )
@@ -52,7 +52,7 @@ func (proto *IrcProto) Run() {
 	for !proto.terminate {
 		// connect to server
 		if err := proto.conn.Connect(); err != nil {
-			fmt.Printf("Connection error: %s\n", err)
+            log.ERROR.Printf("Connection error: %s", err)
 			return
 		}
 
@@ -86,7 +86,7 @@ func (proto *IrcProto) Register(r agent.Receiver) {
                 r.Recv(addr, msg)
             case strings.HasPrefix(msg.Cmd, ":irc"):
                 // handle message here
-                agent.LogTrace.Printf("Got irc proto command: %s", msg.Raw)
+                log.TRACE.Printf("Irc command, addr: %s, msg: %s", addr, msg.Raw)
         }
     }
 	proto.conn.HandleFunc("PRIVMSG", handler)
