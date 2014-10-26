@@ -1,5 +1,3 @@
-module interface, refactor modules
-extend irc proto
 add info module
 improve shell
 add tcp server / telnet proto
