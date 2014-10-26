@@ -42,7 +42,7 @@ func NewIrcProto() *IrcProto {
 
 	c.HandleFunc("connected", func(conn *irc.Conn, line *irc.Line) {
         log.INFO.Printf("Connected to irc server")
-        conn.Join("#foobot")
+        conn.Join(conf.Get("irc.channel", "#foobot"))
     })
 
 	c.HandleFunc("disconnected", func(conn *irc.Conn, line *irc.Line) {
@@ -83,6 +83,20 @@ func (p *IrcProto) Register(i proto.Interpreter) {
 	p.conn.HandleFunc("PRIVMSG", handler)
 }
 
-func (proto *IrcProto) Handle(msg *proto.Msg) string {
-    return "irc not implemented"
+func (p *IrcProto) Handle(msg *proto.Msg) string {
+    msg2 := proto.Parse(msg.Args)
+    switch msg2.Cmd {
+        case "msg":
+            p.conn.Privmsg(msg2.Arg[0], strings.Join(msg2.Arg[1:], " "))
+        case "join":
+            p.conn.Join(msg2.Arg[0])
+        case "part":
+            p.conn.Part(msg2.Arg[0], "bye")
+        case "kick":
+            p.conn.Kick(msg2.Arg[0], msg2.Arg[1], "bye")
+        case "nick":
+            p.conn.Nick(msg2.Arg[0])
+    }
+
+    return ""
 }

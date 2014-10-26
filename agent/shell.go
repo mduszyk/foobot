@@ -38,11 +38,6 @@ func NewShellModule() *Shell {
 	}
 }
 
-func (sh *Shell) Handle(msg *proto.Msg) string {
-    rsp := sh.Insert(msg.Args)
-    return rsp
-}
-
 // TODO improve this
 func (sh *Shell) Insert(line string) string {
     sh.stdin.Write([]byte(line + "; echo -e '\\x63\\x68\\x65\\x63\\x6b'\n"))
@@ -64,3 +59,7 @@ func (sh *Shell) Insert(line string) string {
     return string(rspBuf[:l])
 }
 
+func (sh *Shell) Handle(msg *proto.Msg) string {
+    rsp := sh.Insert(msg.Args)
+    return rsp
+}

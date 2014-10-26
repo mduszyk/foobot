@@ -8,6 +8,7 @@ type Msg struct {
     Raw string
     Cmd string
     Args string
+    Arg []string
 }
 
 type Interpreter interface {
@@ -26,9 +27,11 @@ func Parse(text string) *Msg {
         Raw: text,
         Cmd: chunks[0],
         Args: "",
+        Arg: nil,
     }
     if len(chunks) > 1 {
         msg.Args = chunks[1]
+        msg.Arg = strings.Split(chunks[1], " ")
     }
     return msg
 }

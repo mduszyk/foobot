@@ -21,19 +21,6 @@ func NewAgent() *Agent {
     return agent
 }
 
-func (agent *Agent) Handle(msg *proto.Msg) string {
-    log.TRACE.Printf("Agent cmd, msg: %s", msg.Raw)
-
-    rsp := ""
-
-    module, ok := agent.modules[msg.Cmd]
-    if ok {
-        rsp = module.Handle(msg)
-    }
-
-    return rsp
-}
-
 func (agent *Agent) AddProto(name string, proto proto.Proto) {
     proto.Register(agent)
     agent.protos[name] = proto
@@ -52,4 +39,17 @@ func (agent *Agent) Run() {
     log.INFO.Printf("Starting agent")
     // run default proto
     agent.proto.Run()
+}
+
+func (agent *Agent) Handle(msg *proto.Msg) string {
+    log.TRACE.Printf("Agent cmd, msg: %s", msg.Raw)
+
+    rsp := ""
+
+    module, ok := agent.modules[msg.Cmd]
+    if ok {
+        rsp = module.Handle(msg)
+    }
+
+    return rsp
 }
