@@ -1,0 +1,10 @@
+module interface
+log to file
+conf to file
+extend irc proto
+improve shell
+add info module
+add tcp server / telnet proto
+support windows
+bindata
+

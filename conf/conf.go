@@ -35,16 +35,19 @@ func Init() {
     if err != nil {
         log.ERROR.Printf("Failed getting hostname, error: %s")
     }
-    Set("os.hostname", hostname)
-    Set("os.pid", strconv.Itoa(os.Getpid()))
-    Set("os.uid", strconv.Itoa(os.Getuid()))
     wd, err := os.Getwd()
     if err != nil {
         log.ERROR.Printf("Failed getting wd, error: %s")
     }
+
     Set("os.wd", wd)
+    Set("os.hostname", hostname)
+    Set("os.pid", strconv.Itoa(os.Getpid()))
+    Set("os.uid", strconv.Itoa(os.Getuid()))
 
     Set("bot.bindir", getBinDir())
+    Set("bot.shell", "/bin/bash")
+
     Set("irc.nick", hostname)
 }
 

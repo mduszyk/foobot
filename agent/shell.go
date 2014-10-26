@@ -5,6 +5,7 @@ import(
     "os/exec"
     "strings"
 	"fuzzywookie/foobot/log"
+	"fuzzywookie/foobot/conf"
 )
 
 type Shell struct {
@@ -14,7 +15,7 @@ type Shell struct {
 }
 
 func NewShell() *Shell {
-    shell := "/bin/bash"
+    shell := conf.Get("bot.shell")
     proc := exec.Command(shell)
     in, err := proc.StdinPipe()
     if err != nil {
