@@ -2,7 +2,6 @@ package conf
 
 import (
     "os"
-    "strconv"
     "strings"
     "path/filepath"
 	"fuzzywookie/foobot/log"
@@ -23,7 +22,7 @@ func Get(key string, args ...string) string {
     return args[0]
 }
 
-func getBinDir() string {
+func GetBinDir() string {
     dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
     if err != nil {
         log.ERROR.Printf("Failed getting binary dir, error: %s", err)
@@ -37,17 +36,8 @@ func Init() {
     if err != nil {
         log.ERROR.Printf("Failed getting hostname, error: %s")
     }
-    wd, err := os.Getwd()
-    if err != nil {
-        log.ERROR.Printf("Failed getting wd, error: %s")
-    }
 
-    Set("os.wd", wd)
-    Set("os.hostname", hostname)
-    Set("os.pid", strconv.Itoa(os.Getpid()))
-    Set("os.uid", strconv.Itoa(os.Getuid()))
-
-    Set("bot.bindir", getBinDir())
+    Set("bot.bindir", GetBinDir())
     Set("bot.shell", "/bin/bash")
 
     Set("irc.nick", hostname)

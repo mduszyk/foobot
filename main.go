@@ -33,6 +33,7 @@ func main() {
     a.AddModule(":conf", conf.NewConfModule())
     a.AddModule(":sh", agent.NewShellModule())
     a.AddModule(":irc", ircProto)
+    a.AddModule(":info", agent.NewInfoModule())
     a.AddProto("irc", ircProto)
     a.Run()
 
