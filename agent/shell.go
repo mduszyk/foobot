@@ -6,6 +6,7 @@ import(
     "strings"
 	"fuzzywookie/foobot/log"
 	"fuzzywookie/foobot/conf"
+	"fuzzywookie/foobot/proto"
 )
 
 type Shell struct {
@@ -14,7 +15,7 @@ type Shell struct {
     stdout io.ReadCloser
 }
 
-func NewShell() *Shell {
+func NewShellModule() *Shell {
     shell := conf.Get("bot.shell")
     proc := exec.Command(shell)
     in, err := proc.StdinPipe()
@@ -35,6 +36,11 @@ func NewShell() *Shell {
         stdin: in,
 		stdout: out,
 	}
+}
+
+func (sh *Shell) Handle(msg *proto.Msg) string {
+    rsp := sh.Insert(msg.Args)
+    return rsp
 }
 
 // TODO improve this

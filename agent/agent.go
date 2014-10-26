@@ -1,65 +1,55 @@
 package agent
 
 import (
-    "strconv"
-    "strings"
     "reflect"
 	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/conf"
+	"fuzzywookie/foobot/proto"
 )
 
 type Agent struct {
-    proto Proto
-    sh *Shell
+    protos map[string]proto.Proto
+    modules map[string]proto.Interpreter
+    proto proto.Proto
 }
 
 func NewAgent() *Agent {
-    sh := NewShell()
 	agent := &Agent{
-        sh: sh,
+        proto: nil,
+        protos: make(map[string]proto.Proto),
+        modules: make(map[string]proto.Interpreter),
     }
     return agent
 }
 
-func (agent *Agent) Recv(addr string, msg *Msg) {
-    var rsp string
+func (agent *Agent) Handle(msg *proto.Msg) string {
+    log.TRACE.Printf("Agent cmd, msg: %s", msg.Raw)
 
-    switch msg.Cmd {
-        default:
-            rsp = "ECHO: " + msg.Raw
-        case ":sh":
-            rsp = agent.sh.Insert(msg.Args)
-        case ":conf":
-            if len(msg.Args) == 0 {
-                rsp = conf.Dump()
-            } else {
-                rsp = msg.Args + ": " + conf.Get(msg.Args)
-            }
-        case ":log":
-            if strings.HasPrefix(msg.Args, "level") {
-                chunks := strings.SplitN(msg.Args, " ", 2)
-                log.SetLevelStr(chunks[1])
-                rsp = "log level " + chunks[1]
-            } else {
-                n, err := strconv.Atoi(msg.Args)
-                if err == nil {
-                    n = 1
-                }
-                rsp = log.Tail(n)
-            }
+    rsp := ""
+
+    module, ok := agent.modules[msg.Cmd]
+    if ok {
+        rsp = module.Handle(msg)
     }
 
-    log.TRACE.Printf("Agent cmd, addr: %s, msg: %s", addr, msg.Raw)
-    agent.proto.Send(addr, rsp)
+    return rsp
 }
 
-func (agent *Agent) Attach(proto Proto) {
+func (agent *Agent) AddProto(name string, proto proto.Proto) {
     proto.Register(agent)
-    agent.proto = proto
-    log.INFO.Printf("Attached proto: %s", reflect.TypeOf(proto))
+    agent.protos[name] = proto
+    if agent.proto == nil {
+        agent.proto = proto
+    }
+    log.INFO.Printf("Added proto, name: %s, type: %s", name, reflect.TypeOf(proto))
+}
+
+func (agent *Agent) AddModule(cmd string, module proto.Interpreter) {
+    agent.modules[cmd] = module
+    log.INFO.Printf("Added module, cmd: %s, type: %s", cmd, reflect.TypeOf(module))
 }
 
 func (agent *Agent) Run() {
     log.INFO.Printf("Starting agent")
+    // run default proto
     agent.proto.Run()
 }

@@ -6,9 +6,11 @@ import (
     "strings"
     "path/filepath"
 	"fuzzywookie/foobot/log"
+	"fuzzywookie/foobot/proto"
 )
 
-var data = make(map[string]string)
+type ConfData map[string]string
+var data = make(ConfData)
 
 func Set(key string, value string) {
     data[key] = value
@@ -58,4 +60,18 @@ func Dump() string {
     }
 
     return strings.Join(buf, "\n")
+}
+
+func NewConfModule() *ConfData {
+    return &data
+}
+
+func (data *ConfData) Handle(msg *proto.Msg) string {
+    rsp := ""
+    if len(msg.Args) == 0 {
+        rsp = Dump()
+    } else {
+        rsp = msg.Args + ": " + Get(msg.Args)
+    }
+    return rsp
 }

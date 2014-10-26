@@ -1,11 +1,11 @@
-package proto
+package protoimpl
 
 import (
     "strings"
     "crypto/tls"
 	"fuzzywookie/foobot/log"
 	"fuzzywookie/foobot/conf"
-	"fuzzywookie/foobot/agent"
+	"fuzzywookie/foobot/proto"
 	irc "github.com/fluffle/goirc/client"
 )
 
@@ -40,11 +40,15 @@ func NewIrcProto() *IrcProto {
         terminate: false,
 	}
 
-	c.HandleFunc("connected",
-		func(conn *irc.Conn, line *irc.Line) { conn.Join("#foobot") })
+	c.HandleFunc("connected", func(conn *irc.Conn, line *irc.Line) {
+        log.INFO.Printf("Connected to irc server")
+        conn.Join("#foobot")
+    })
 
-	c.HandleFunc("disconnected",
-		func(conn *irc.Conn, line *irc.Line) { proto.disconn <- true })
+	c.HandleFunc("disconnected", func(conn *irc.Conn, line *irc.Line) {
+        log.INFO.Printf("Disconnected from irc server")
+        proto.disconn <- true
+    })
 
     return proto
 }
@@ -68,28 +72,17 @@ func (proto *IrcProto) Send(addr string, text string) {
     }
 }
 
-func (proto *IrcProto) Register(r agent.Receiver) {
+func (p *IrcProto) Register(i proto.Interpreter) {
     handler := func(conn *irc.Conn, line *irc.Line) {
-        addr := line.Target()
-        text := line.Text()
-        chunks := strings.SplitN(text, " ", 2)
-        msg := &agent.Msg{
-            Raw: text,
-            Cmd: chunks[0],
-            Args: "",
-        }
-        if len(chunks) > 1 {
-            msg.Args = chunks[1]
-        }
-        switch {
-            default:
-                // pass message to agent
-                r.Recv(addr, msg)
-            case strings.HasPrefix(msg.Cmd, ":irc"):
-                // handle message here
-                log.TRACE.Printf("Irc command, addr: %s, msg: %s", addr, msg.Raw)
-        }
+        log.TRACE.Printf("Got message, line: %s", line)
+        msg := proto.Parse(line.Text())
+        // pass message to agent
+        rsp := i.Handle(msg)
+        p.Send(line.Target(), rsp)
     }
-	proto.conn.HandleFunc("PRIVMSG", handler)
+	p.conn.HandleFunc("PRIVMSG", handler)
 }
 
+func (proto *IrcProto) Handle(msg *proto.Msg) string {
+    return "irc not implemented"
+}

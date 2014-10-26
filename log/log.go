@@ -1,17 +1,44 @@
 // TODO make buffer to be cyclic buffer with fixed size
 package log
 
-import "log"
-import "bytes"
-import "strings"
+import(
+    "os"
+    "io"
+    "log"
+    "bytes"
+    "strconv"
+    "strings"
+	"fuzzywookie/foobot/proto"
+)
 
 const LEVEL_TRACE = 0
 const LEVEL_INFO = 1
 const LEVEL_WARN = 2
 const LEVEL_ERROR = 3
 
+type MutableWriter struct {
+    writer io.Writer
+}
+
+func (mw *MutableWriter) Write(p []byte) (n int, err error) {
+    return mw.writer.Write(p)
+}
+
+func (mw *MutableWriter) SetWriter(w io.Writer) {
+    mw.writer = w
+}
+
+type LogData struct {
+    writer *MutableWriter
+    level int
+}
+
 var buf bytes.Buffer
-var level int
+
+var data = LogData {
+    writer: &MutableWriter{&buf},
+    level: LEVEL_INFO,
+}
 
 var levelMap = map[string]int{
     "trace": LEVEL_TRACE,
@@ -28,38 +55,42 @@ type nullLog struct{}
 func (l *nullLog) Printf(format string, v ...interface{}) {}
 
 var disabled nullLog
-var trace = log.New(&buf, "TRACE: ", log.Ldate | log.Ltime | log.Lshortfile)
-var info = log.New(&buf, "INFO : ", log.Ldate | log.Ltime | log.Lshortfile)
-var warn = log.New(&buf, "WARN : ", log.Ldate | log.Ltime | log.Lshortfile)
-var err = log.New(&buf, "ERROR: ", log.Ldate | log.Ltime | log.Lshortfile)
+var trace = log.New(data.writer, "TRACE: ", log.Ldate | log.Ltime | log.Lshortfile)
+var info = log.New(data.writer, "INFO : ", log.Ldate | log.Ltime | log.Lshortfile)
+var warn = log.New(data.writer, "WARN : ", log.Ldate | log.Ltime | log.Lshortfile)
+var err = log.New(data.writer, "ERROR: ", log.Ldate | log.Ltime | log.Lshortfile)
 
 var TRACE = Log(&disabled)
 var INFO = Log(info)
 var WARN = Log(warn)
 var ERROR = Log(err)
 
+func EnableStdout() {
+    data.writer.SetWriter(io.MultiWriter(&buf, os.Stdout))
+}
+
 func SetLevelStr(l string) {
     SetLevel(levelMap[strings.ToLower(l)])
 }
 
 func SetLevel(l int) {
-    level = l
-    if (LEVEL_TRACE >= level) {
+    data.level = l
+    if (LEVEL_TRACE >= data.level) {
         TRACE = trace
     } else {
         TRACE = &disabled
     }
-    if (LEVEL_INFO >= level) {
+    if (LEVEL_INFO >= data.level) {
         INFO = info
     } else {
         INFO = &disabled
     }
-    if (LEVEL_WARN >= level) {
+    if (LEVEL_WARN >= data.level) {
         WARN = warn
     } else {
         WARN = &disabled
     }
-    if (LEVEL_ERROR >= level) {
+    if (LEVEL_ERROR >= data.level) {
         ERROR = err
     } else {
         ERROR = &disabled
@@ -69,5 +100,25 @@ func SetLevel(l int) {
 func Tail(n int) string {
     // TODO 
     return buf.String()
+}
+
+func NewLogModule() *LogData {
+    return &data
+}
+
+func (data *LogData) Handle(msg *proto.Msg) string {
+    rsp := ""
+    if strings.HasPrefix(msg.Args, "level") {
+        chunks := strings.SplitN(msg.Args, " ", 2)
+        SetLevelStr(chunks[1])
+        rsp = "log level " + chunks[1]
+    } else {
+        n, err := strconv.Atoi(msg.Args)
+        if err == nil {
+            n = 1
+        }
+        rsp = Tail(n)
+    }
+    return rsp
 }
 
