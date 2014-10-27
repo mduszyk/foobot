@@ -34,7 +34,7 @@ func GetBinDir() string {
 func Init() {
     hostname, err := os.Hostname()
     if err != nil {
-        log.ERROR.Printf("Failed getting hostname, error: %s")
+        log.ERROR.Printf("Failed getting hostname, error: %s", err)
     }
 
     Set("bot.bindir", GetBinDir())

@@ -20,11 +20,11 @@ func NewInfoModule() *Info {
 func basicInfo() string {
     hostname, err := os.Hostname()
     if err != nil {
-        log.ERROR.Printf("Failed getting hostname, error: %s")
+        log.ERROR.Printf("Failed getting hostname, error: %s", err)
     }
     wd, err := os.Getwd()
     if err != nil {
-        log.ERROR.Printf("Failed getting wd, error: %s")
+        log.ERROR.Printf("Failed getting wd, error: %s", err)
     }
     var mem runtime.MemStats
     runtime.ReadMemStats(&mem)
