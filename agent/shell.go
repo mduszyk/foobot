@@ -61,9 +61,9 @@ func (sh *Shell) Start() {
     sh.stderr = reader
 
     // setup shell prompt
-    pscmd := "export PS1=\"" + PS1 + "\"; echo -e '\\x63\\x68\\x65\\x63\\x6b'\n"
+    pscmd := "export PS1=\"" + PS1 + "\"\n"
     sh.stdin.Write([]byte(pscmd))
-    readBetween(sh.stdout, "", "check\n" + PS1)
+    readBetween(sh.stdout, "", PS1 + "\"\n" + PS1)
 }
 
 func readBetween(r io.Reader, token1 string, token2 string) string {
