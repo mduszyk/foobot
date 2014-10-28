@@ -39,6 +39,7 @@ func (sh *Shell) Start() {
         return
     }
 
+    // common pipe for stdout and strerr
     reader, writer := io.Pipe()
     proc.Stdout = writer
     proc.Stderr = writer
@@ -51,6 +52,7 @@ func (sh *Shell) Start() {
     sh.stdout = reader
     sh.stderr = reader
 
+    // setup shell prompt
     pscmd := "export PS1=\"" + PS1 + "\"; echo -e '\\x63\\x68\\x65\\x63\\x6b'\n"
     sh.stdin.Write([]byte(pscmd))
     readBetween(sh.stdout, "", "check\n" + PS1)
