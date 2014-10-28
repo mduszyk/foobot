@@ -1,8 +1,6 @@
-add info module
-improve shell
 add tcp server / telnet proto
-log to file
-conf to file
+extend info module
+extend shell module, manage multiple shells
 support windows
 bindata
 
