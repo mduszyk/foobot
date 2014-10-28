@@ -1,6 +1,7 @@
 add tcp server / telnet proto
 extend info module
 extend shell module, manage multiple shells
+add help module
 support windows
 bindata
 
