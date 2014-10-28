@@ -26,9 +26,17 @@ func NewShellModule() *Shell {
 func (sh *Shell) Start() {
     shell := conf.Get("bot.shell")
 
+    chunks := strings.Split(shell, " ")
+    var args []string
+    if len(chunks) > 1 {
+        args = chunks[1:]
+    } else {
+        args = []string{}
+    }
+
     /* os.Setenv("PS1", PS1) */
 
-    proc := exec.Command(shell, "-i")
+    proc := exec.Command(chunks[0], args...)
     /* proc.Env = os.Environ() */
 
     log.TRACE.Printf("New shell env: %s", proc.Env)

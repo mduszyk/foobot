@@ -38,7 +38,7 @@ func Init() {
     }
 
     Set("bot.bindir", GetBinDir())
-    Set("bot.shell", "/bin/bash")
+    Set("bot.shell", "/bin/bash -i")
 
     Set("irc.nick", hostname)
 }
