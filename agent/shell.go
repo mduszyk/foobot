@@ -10,7 +10,7 @@ import(
 	"fuzzywookie/foobot/proto"
 )
 
-const PS1 = "FOOBOT"
+const PS1 = "--FOOBOT--"
 
 type Shell struct {
     proc *exec.Cmd
