@@ -29,12 +29,13 @@ func basicInfo() string {
     var mem runtime.MemStats
     runtime.ReadMemStats(&mem)
     info := ""
-    info += "os.wd: " + wd + "\n"
     info += "os.hostname: " + hostname + "\n"
     info += "os.pid: " + strconv.Itoa(os.Getpid()) + "\n"
     info += "os.gid: " + strconv.Itoa(os.Getgid()) + "\n"
     info += "os.uid: " + strconv.Itoa(os.Getuid()) + "\n"
     info += "os.page: " + strconv.Itoa(os.Getpagesize()) + "\n"
+    info += "os.wd: " + wd + "\n"
+    info += "bot.bindir: " + conf.GetBinDir() + "\n"
     info += "runtime.GOOS: " + runtime.GOOS + "\n"
     info += "runtime.GOARCH: " + runtime.GOARCH + "\n"
     info += "runtime.GOMAXPROCS: " + strconv.Itoa(runtime.GOMAXPROCS(0)) + "\n"
@@ -43,7 +44,6 @@ func basicInfo() string {
     info += "runtime.Version: " + runtime.Version() + "\n"
     info += "runtime.MemStats.Alloc: " + strconv.FormatUint(mem.Alloc, 10) + "\n"
     info += "runtime.MemStats.Sys: " + strconv.FormatUint(mem.Sys, 10) + "\n"
-    info += "bot.bindir: " + conf.GetBinDir() + "\n"
 
     return info
 }
