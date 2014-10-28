@@ -17,6 +17,7 @@ type Shell struct {
     stdin io.WriteCloser
     stdout io.ReadCloser
     stderr io.ReadCloser
+    ps1 string
 }
 
 func NewShellModule() *Shell {
@@ -60,10 +61,15 @@ func (sh *Shell) Start() {
     sh.stdout = reader
     sh.stderr = reader
 
+    sh.setupPrompt(PS1)
+}
+
+func (sh *Shell) setupPrompt(ps1 string) {
     // setup shell prompt
-    pscmd := "export PS1=\"" + PS1 + "\"\n"
+    pscmd := "export PS1=\"" + ps1 + "\"\n"
     sh.stdin.Write([]byte(pscmd))
-    readBetween(sh.stdout, "", PS1 + "\"\n" + PS1)
+    readBetween(sh.stdout, "", ps1 + "\"\n" + ps1)
+    sh.ps1 = ps1
 }
 
 func readBetween(r io.Reader, token1 string, token2 string) string {
@@ -98,7 +104,7 @@ func (sh *Shell) Insert(line string) string {
 
     sh.stdin.Write([]byte(line + "\n"))
 
-    return readBetween(sh.stdout, "\n", PS1)
+    return readBetween(sh.stdout, "\n", sh.ps1)
 }
 
 func (sh *Shell) Handle(msg *proto.Msg) string {
