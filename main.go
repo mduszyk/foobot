@@ -25,8 +25,11 @@ func main() {
     conf.Set("irc.pass", "baltycka")
     conf.Set("irc.server", "cube.mdevel.net:6697")
     conf.Set("irc.version", "foobot 1.0")
+    conf.Set("net.server.type", "tcp")
+    conf.Set("net.server.socket", "localhost:6600")
 
     ircProto := protoimpl.NewIrcProto()
+    netServerProto := protoimpl.NewNetServerProto()
 
     a := agent.NewAgent()
 
@@ -37,6 +40,9 @@ func main() {
     a.AddModule(":sh", agent.NewShellModule())
 
     a.AddProto("irc", ircProto)
+    a.AddProto("net", netServerProto)
+
+    a.StartProto("net")
 
     a.Run()
 }

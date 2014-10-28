@@ -41,44 +41,47 @@ func NewIrcProto() *IrcProto {
 	}
 
 	c.HandleFunc("connected", func(conn *irc.Conn, line *irc.Line) {
-        log.INFO.Printf("Connected to irc server")
+        log.INFO.Printf("Connected to irc server, socket: %s", cfg.Server)
         conn.Join(conf.Get("irc.channel", "#foobot"))
     })
 
 	c.HandleFunc("disconnected", func(conn *irc.Conn, line *irc.Line) {
-        log.INFO.Printf("Disconnected from irc server")
+        log.INFO.Printf("Disconnected from irc, server", cfg.Server)
         proto.disconn <- true
     })
 
     return proto
 }
 
-func (proto *IrcProto) Run() {
-	for !proto.terminate {
+func (p *IrcProto) Run() {
+    log.INFO.Printf("Starting irc proto")
+	for !p.terminate {
 		// connect to server
-		if err := proto.conn.Connect(); err != nil {
+		if err := p.conn.Connect(); err != nil {
             log.ERROR.Printf("Connection error: %s", err)
 			return
 		}
 
 		// wait on disconnect channel
-		<-proto.disconn
+		<-p.disconn
 	}
 }
 
-func (proto *IrcProto) Send(addr string, text string) {
+func (p *IrcProto) Send(addr string, text string) {
     for _, e := range strings.Split(text, "\n") {
-        proto.conn.Privmsg(addr, e)
+        p.conn.Privmsg(addr, e)
     }
 }
 
 func (p *IrcProto) Register(i proto.Interpreter) {
     handler := func(conn *irc.Conn, line *irc.Line) {
-        log.TRACE.Printf("Got message, line: %s", line)
+        addr := line.Target()
+        log.TRACE.Printf("Got message, addr: %s, irc line: %s", addr, line)
         msg := proto.Parse(line.Text())
+        msg.Addr = addr
         // pass message to agent
         rsp := i.Handle(msg)
-        p.Send(line.Target(), rsp)
+        p.Send(addr, rsp)
     }
 	p.conn.HandleFunc("PRIVMSG", handler)
 }

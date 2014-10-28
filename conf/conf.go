@@ -2,7 +2,6 @@ package conf
 
 import (
     "os"
-    "strings"
     "path/filepath"
 	"fuzzywookie/foobot/log"
 	"fuzzywookie/foobot/proto"
@@ -44,12 +43,12 @@ func Init() {
 }
 
 func Dump() string {
-    buf := make([]string, 64)
+    rsp := ""
     for k, v := range data {
-        buf = append(buf, k + ": " + v)
+        rsp += k + ": " + v + "\n"
     }
 
-    return strings.Join(buf, "\n")
+    return rsp
 }
 
 func NewConfModule() *ConfData {

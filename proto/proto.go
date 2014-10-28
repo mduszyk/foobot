@@ -9,6 +9,7 @@ type Msg struct {
     Cmd string
     Args string
     Arg []string
+    Addr string
 }
 
 type Interpreter interface {

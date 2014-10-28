@@ -1,6 +1,7 @@
-add tcp server / telnet proto
+add auth to irc proto
 extend info module
 extend shell module, manage multiple shells
 add help module
 support windows
 bindata
+modules talk to each other

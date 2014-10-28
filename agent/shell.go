@@ -85,7 +85,7 @@ func readBetween(r io.Reader, token1 string, token2 string) string {
         text := string(outBuf[:end])
 
         if start < 0 {
-            start = strings.Index(text, token1)
+            start = strings.Index(text, token1) + len(token1)
         } else if strings.Contains(text, token2) {
             break
         }

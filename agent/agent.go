@@ -41,13 +41,21 @@ func (agent *Agent) Run() {
     agent.proto.Run()
 }
 
-func (agent *Agent) Handle(msg *proto.Msg) string {
-    log.TRACE.Printf("Agent cmd, msg: %s", msg.Raw)
+func (agent *Agent) StartProto(name string) {
+    proto, ok := agent.protos[name]
+    if !ok {
+        log.ERROR.Printf("Proto not found, name: %s", name)
+        return
+    }
+    go proto.Run()
+}
 
+func (agent *Agent) Handle(msg *proto.Msg) string {
     rsp := ""
 
     module, ok := agent.modules[msg.Cmd]
     if ok {
+        log.TRACE.Printf("Agent, msg.Addr: %s, msg.Raw: %s", msg.Addr, msg.Raw)
         rsp = module.Handle(msg)
     }
 
