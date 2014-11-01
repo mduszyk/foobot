@@ -11,8 +11,6 @@ import(
 	"fuzzywookie/foobot/proto"
 )
 
-const PROMPT = "$FoObOt> "
-
 type NetServerProto struct {
     handlers *list.List
     conns map[string]net.Conn
@@ -53,8 +51,6 @@ func (p *NetServerProto) Run() {
 }
 
 func (p *NetServerProto) handleConn(conn net.Conn) {
-    conn.Write([]byte(PROMPT))
-
     p.conns[conn.RemoteAddr().String()] = conn
     reader := textproto.NewReader(bufio.NewReader(conn))
     for {
@@ -88,9 +84,12 @@ func (p *NetServerProto) Register(i proto.Interpreter) {
         log.TRACE.Printf("Got message, addr: %s, line: %s", addr, line)
         msg := proto.Parse(line)
         msg.Addr = addr
+        msg.Src = p
         // pass message to agent
         rsp := i.Handle(msg)
-        conn.Write([]byte(rsp + PROMPT))
+        if rsp != "" {
+            conn.Write([]byte(rsp))
+        }
     }
     p.handlers.PushBack(handler)
 }

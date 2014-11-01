@@ -27,6 +27,8 @@ func main() {
     conf.Set("irc.version", "foobot 1.0")
     conf.Set("net.server.type", "tcp")
     conf.Set("net.server.socket", "localhost:6600")
+    conf.Set("bot.cmdbuf", "10")
+    conf.Set("bot.wrktimout", "120")
 
     ircProto := protoimpl.NewIrcProto()
     netServerProto := protoimpl.NewNetServerProto()

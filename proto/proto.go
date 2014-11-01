@@ -10,6 +10,7 @@ type Msg struct {
     Args string
     Arg []string
     Addr string
+    Src Proto
 }
 
 type Interpreter interface {

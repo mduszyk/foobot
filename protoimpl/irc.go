@@ -79,9 +79,12 @@ func (p *IrcProto) Register(i proto.Interpreter) {
         log.TRACE.Printf("Got message, addr: %s, irc line: %s", addr, line)
         msg := proto.Parse(line.Text())
         msg.Addr = addr
+        msg.Src = p
         // pass message to agent
         rsp := i.Handle(msg)
-        p.Send(addr, rsp)
+        if rsp != "" {
+            p.Send(addr, rsp)
+        }
     }
 	p.conn.HandleFunc("PRIVMSG", handler)
 }
