@@ -75,9 +75,14 @@ func (p *IrcProto) Send(addr string, text string) {
 
 func (p *IrcProto) Register(i proto.Interpreter) {
     handler := func(conn *irc.Conn, line *irc.Line) {
+        text := line.Text()
+        // ignore irc chat messages
+        if text[0] != ':' {
+            return
+        }
         addr := line.Target()
         log.TRACE.Printf("Got message, addr: %s, irc line: %s", addr, line)
-        msg := proto.Parse(line.Text())
+        msg := proto.Parse(text)
         msg.Addr = addr
         msg.Src = p
         // pass message to agent
