@@ -12,6 +12,10 @@ import(
 
 const PS1 = "--FoObOt--"
 
+type ShellModule struct {
+    shells map[string]*Shell
+}
+
 type Shell struct {
     proc *exec.Cmd
     stdin io.WriteCloser
@@ -20,7 +24,13 @@ type Shell struct {
     ps1 string
 }
 
-func NewShellModule() *Shell {
+func NewShellModule() *ShellModule {
+    return &ShellModule{
+        shells: make(map[string]*Shell),
+    }
+}
+
+func NewShell() *Shell {
     return &Shell{}
 }
 
@@ -107,7 +117,37 @@ func (sh *Shell) Insert(line string) string {
     return readBetween(sh.stdout, "\n", sh.ps1)
 }
 
-func (sh *Shell) Handle(msg *proto.Msg) string {
-    rsp := sh.Insert(msg.Args)
+func (m *ShellModule) list() string {
+    rsp := ""
+    for k, v := range m.shells {
+        rsp += k + ": " + strings.Join(v.proc.Args, " ") + "\n"
+    }
+
+    return rsp
+}
+
+func (m *ShellModule) Handle(msg *proto.Msg) string {
+    rsp := ""
+
+    msg2 := proto.Parse(msg.Args)
+    switch msg2.Cmd {
+        case "":
+            log.TRACE.Printf("Shell list, addr: %s")
+            rsp = m.list()
+        case ":list":
+            log.TRACE.Printf("Shell list, addr: %s")
+            rsp = m.list()
+        case ":kill":
+            log.TRACE.Printf("Shell kill, addr: %s, args: %s", msg2.Args)
+        default:
+            sh, ok := m.shells[msg.Addr]
+            if !ok {
+                sh = NewShell()
+                sh.Start()
+                m.shells[msg.Addr] = sh
+            }
+            rsp = sh.Insert(msg.Args)
+    }
+
     return rsp
 }
