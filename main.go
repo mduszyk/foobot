@@ -1,11 +1,12 @@
 package main
 
 import (
-	"flag"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/conf"
-	"fuzzywookie/foobot/agent"
-	"fuzzywookie/foobot/protoimpl"
+    "flag"
+    "fuzzywookie/foobot/log"
+    "fuzzywookie/foobot/conf"
+    "fuzzywookie/foobot/agent"
+    "fuzzywookie/foobot/protoimpl"
+    "github.com/VividCortex/godaemon"
 )
 
 var verbose *bool = flag.Bool("v", false, "Prints logs to stdout on trace level")
@@ -16,6 +17,8 @@ func main() {
     if *verbose {
         log.EnableStdout()
         log.SetLevel(log.LEVEL_TRACE)
+    } else {
+        godaemon.MakeDaemon(&godaemon.DaemonAttr{})
     }
 
     conf.Init()
