@@ -84,7 +84,8 @@ func (p *IrcProto) Register(i proto.Interpreter) {
         log.TRACE.Printf("Got message, addr: %s, irc line: %s", addr, line)
         msg := proto.Parse(text)
         msg.Addr = addr
-        msg.Src = p
+        msg.User = line.Src
+        msg.Proto = p
         // pass message to agent
         rsp := i.Handle(msg)
         if rsp != "" {
@@ -95,18 +96,17 @@ func (p *IrcProto) Register(i proto.Interpreter) {
 }
 
 func (p *IrcProto) Handle(msg *proto.Msg) string {
-    msg2 := proto.Parse(msg.Args)
-    switch msg2.Cmd {
+    switch msg.Cmd {
         case "msg":
-            p.conn.Privmsg(msg2.Arg[0], strings.Join(msg2.Arg[1:], " "))
+            p.conn.Privmsg(msg.Arg[0], strings.Join(msg.Arg[1:], " "))
         case "join":
-            p.conn.Join(msg2.Arg[0])
+            p.conn.Join(msg.Arg[0])
         case "part":
-            p.conn.Part(msg2.Arg[0], "bye")
+            p.conn.Part(msg.Arg[0], "bye")
         case "kick":
-            p.conn.Kick(msg2.Arg[0], msg2.Arg[1], "bye")
+            p.conn.Kick(msg.Arg[0], msg.Arg[1], "bye")
         case "nick":
-            p.conn.Nick(msg2.Arg[0])
+            p.conn.Nick(msg.Arg[0])
     }
 
     return ""

@@ -60,12 +60,11 @@ func envInfo(key string) string {
 
 func (i *Info) Handle(msg *proto.Msg) string {
     rsp := ""
-    msg2 := proto.Parse(msg.Args)
-    switch msg2.Cmd {
+    switch msg.Cmd {
         case "":
             rsp = basicInfo()
         case "env":
-            rsp = envInfo(msg2.Args)
+            rsp = envInfo(msg.Args)
     }
 
     return rsp

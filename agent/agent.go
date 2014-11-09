@@ -13,6 +13,8 @@ type Agent struct {
     protos map[string]proto.Proto
     modules map[string]proto.Interpreter
     proto proto.Proto
+    auth *AuthModule
+    authCmd string
     workers map[string]chan *proto.Msg
     cmdbuf int
     wrktimout time.Duration
@@ -21,39 +23,45 @@ type Agent struct {
 func NewAgent() *Agent {
     buf, _ := strconv.Atoi(conf.Get("bot.cmdbuf", "10"))
     timout, _ := strconv.Atoi(conf.Get("bot.wrktimout", "10"))
-	agent := &Agent{
+	a := &Agent{
         proto: nil,
+        auth: nil,
+        authCmd: "",
         protos: make(map[string]proto.Proto),
         modules: make(map[string]proto.Interpreter),
         workers: make(map[string]chan *proto.Msg),
         cmdbuf: buf,
         wrktimout: time.Duration(timout) * time.Second,
     }
-    return agent
+    return a
 }
 
-func (agent *Agent) AddProto(name string, proto proto.Proto) {
-    proto.Register(agent)
-    agent.protos[name] = proto
-    if agent.proto == nil {
-        agent.proto = proto
+func (a *Agent) AddProto(name string, proto proto.Proto) {
+    proto.Register(a)
+    a.protos[name] = proto
+    if a.proto == nil {
+        a.proto = proto
     }
     log.INFO.Printf("Added proto, name: %s, type: %s", name, reflect.TypeOf(proto))
 }
 
-func (agent *Agent) AddModule(cmd string, module proto.Interpreter) {
-    agent.modules[cmd] = module
+func (a *Agent) AddModule(cmd string, module proto.Interpreter) {
+    a.modules[cmd] = module
+    if auth, ok := module.(*AuthModule); ok {
+        a.auth = auth
+        a.authCmd = cmd
+    }
     log.INFO.Printf("Added module, cmd: %s, type: %s", cmd, reflect.TypeOf(module))
 }
 
-func (agent *Agent) Run() {
+func (a *Agent) Run() {
     log.INFO.Printf("Starting agent")
     // run default proto
-    agent.proto.Run()
+    a.proto.Run()
 }
 
-func (agent *Agent) StartProto(name string) {
-    proto, ok := agent.protos[name]
+func (a *Agent) StartProto(name string) {
+    proto, ok := a.protos[name]
     if !ok {
         log.ERROR.Printf("Proto not found, name: %s", name)
         return
@@ -61,34 +69,38 @@ func (agent *Agent) StartProto(name string) {
     go proto.Run()
 }
 
-func (agent *Agent) runWorker(input chan *proto.Msg, addr string) {
+func (a *Agent) runWorker(input chan *proto.Msg, addr string) {
     for {
         select {
             case msg := <-input:
-                module, ok := agent.modules[msg.Cmd]
+                module, ok := a.modules[msg.Cmd]
                 if ok {
                     log.TRACE.Printf("Agent, msg.Addr: %s, msg.Raw: %s",
                         msg.Addr, msg.Raw)
-                    rsp := module.Handle(msg)
-                    msg.Src.Send(msg.Addr, rsp)
+                    rsp := module.Handle(proto.Pop(msg))
+                    msg.Proto.Send(msg.Addr, rsp)
                 }
-            case <-time.After(agent.wrktimout):
+            case <-time.After(a.wrktimout):
                 log.TRACE.Printf("Idle worker exiting, addr %s, timeout: %s",
-                    addr, agent.wrktimout)
-                delete(agent.workers, addr)
+                    addr, a.wrktimout)
+                delete(a.workers, addr)
                 return;
         }
     }
 }
 
-func (agent *Agent) Handle(msg *proto.Msg) string {
+func (a *Agent) Handle(msg *proto.Msg) string {
+    if a.auth != nil && a.authCmd != msg.Cmd && !a.auth.Verify(msg.User) {
+        log.INFO.Printf("Forbidden, user: %s, cmd: %s", msg.User, msg.Raw)
+        return ""
+    }
 
-    input, ok := agent.workers[msg.Addr]
+    input, ok := a.workers[msg.Addr]
     if !ok {
         log.TRACE.Printf("Starting worker, addr: %s", msg.Addr)
-        input = make(chan *proto.Msg, agent.cmdbuf)
-        agent.workers[msg.Addr] = input
-        go agent.runWorker(input, msg.Addr)
+        input = make(chan *proto.Msg, a.cmdbuf)
+        a.workers[msg.Addr] = input
+        go a.runWorker(input, msg.Addr)
     }
 
     rsp := ""

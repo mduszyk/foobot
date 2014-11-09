@@ -57,10 +57,10 @@ func NewConfModule() *ConfData {
 
 func (data *ConfData) Handle(msg *proto.Msg) string {
     rsp := ""
-    if len(msg.Args) == 0 {
+    if len(msg.Raw) == 0 {
         rsp = Dump()
     } else {
-        rsp = msg.Args + ": " + Get(msg.Args)
+        rsp = msg.Raw + ": " + Get(msg.Raw)
     }
     return rsp
 }

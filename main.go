@@ -43,6 +43,7 @@ func main() {
     a.AddModule(":info", agent.NewInfoModule())
     a.AddModule(":log", log.NewLogModule())
     a.AddModule(":sh", agent.NewShellModule())
+    a.AddModule(":auth", agent.NewAuthModule())
 
     a.AddProto("irc", ircProto)
     a.AddProto("net", netServerProto)

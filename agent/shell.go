@@ -29,8 +29,7 @@ func (m *ShellModule) list() string {
 func (m *ShellModule) Handle(msg *proto.Msg) string {
     rsp := ""
 
-    msg2 := proto.Parse(msg.Args)
-    switch msg2.Cmd {
+    switch msg.Cmd {
         case "":
             log.TRACE.Printf("Shell list, addr: %s")
             rsp = m.list()
@@ -38,7 +37,7 @@ func (m *ShellModule) Handle(msg *proto.Msg) string {
             log.TRACE.Printf("Shell list, addr: %s")
             rsp = m.list()
         case ":kill":
-            log.TRACE.Printf("Shell kill, addr: %s, args: %s", msg2.Args)
+            log.TRACE.Printf("Shell kill, addr: %s, args: %s", msg.Args)
         default:
             sh, ok := m.shells[msg.Addr]
             if !ok {
@@ -46,7 +45,7 @@ func (m *ShellModule) Handle(msg *proto.Msg) string {
                 sh.Start()
                 m.shells[msg.Addr] = sh
             }
-            rsp = sh.Insert(msg.Args)
+            rsp = sh.Insert(msg.Raw)
     }
 
     return rsp

@@ -10,7 +10,8 @@ type Msg struct {
     Args string
     Arg []string
     Addr string
-    Src Proto
+    User string
+    Proto Proto
 }
 
 type Interpreter interface {
@@ -35,5 +36,14 @@ func Parse(text string) *Msg {
         msg.Args = chunks[1]
         msg.Arg = strings.Split(chunks[1], " ")
     }
+    return msg
+}
+
+func Pop(m *Msg) *Msg {
+    msg := Parse(m.Args)
+    msg.Raw = m.Args
+    msg.Addr = m.Addr
+    msg.User = m.User
+    msg.Proto = m.Proto
     return msg
 }

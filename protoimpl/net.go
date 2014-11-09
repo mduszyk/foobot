@@ -84,7 +84,8 @@ func (p *NetServerProto) Register(i proto.Interpreter) {
         log.TRACE.Printf("Got message, addr: %s, line: %s", addr, line)
         msg := proto.Parse(line)
         msg.Addr = addr
-        msg.Src = p
+        msg.User = addr
+        msg.Proto = p
         // pass message to agent
         rsp := i.Handle(msg)
         if rsp != "" {
