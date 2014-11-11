@@ -75,8 +75,11 @@ func (a *Agent) runWorker(input chan *proto.Msg, addr string) {
             case msg := <-input:
                 module, ok := a.modules[msg.Cmd]
                 if ok {
-                    log.TRACE.Printf("Agent, msg.Addr: %s, msg.Raw: %s",
-                        msg.Addr, msg.Raw)
+                    if a.authCmd != msg.Cmd {
+                        // don't loging auth proto raw messages
+                        log.TRACE.Printf("Agent, msg.Addr: %s, msg.Raw: %s",
+                            msg.Addr, msg.Raw)
+                    }
                     rsp := module.Handle(proto.Pop(msg))
                     msg.Proto.Send(msg.Addr, rsp)
                 }

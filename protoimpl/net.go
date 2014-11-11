@@ -81,7 +81,7 @@ func (p *NetServerProto) Send(addr string, text string) {
 func (p *NetServerProto) Register(i proto.Interpreter) {
     handler := func(conn net.Conn, line string) {
         addr := conn.RemoteAddr().String()
-        log.TRACE.Printf("Got message, addr: %s, line: %s", addr, line)
+        /* log.TRACE.Printf("Got message, addr: %s, line: %s", addr, line) */
         msg := proto.Parse(line)
         msg.Addr = addr
         msg.User = addr

@@ -66,7 +66,7 @@ var WARN = Log(warn)
 var ERROR = Log(err)
 
 func EnableStdout() {
-    data.writer.SetWriter(io.MultiWriter(&buf, os.Stdout))
+    data.writer.SetWriter(io.MultiWriter(&buf, os.Stderr))
 }
 
 func SetLevelStr(l string) {

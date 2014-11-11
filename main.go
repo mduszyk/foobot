@@ -9,7 +9,8 @@ import (
     "github.com/VividCortex/godaemon"
 )
 
-var verbose *bool = flag.Bool("v", false, "Prints logs to stdout on trace level")
+var verbose *bool = flag.Bool("v", false, "Prints logs to stderr on trace level")
+var pass *string = flag.String("p", "", "Set custom bot pass")
 
 func main() {
 	flag.Parse()
@@ -22,7 +23,7 @@ func main() {
     }
 
     conf.Init()
-    conf.Set("irc.channel", "#foobot")
+    conf.Set("irc.channel", "#bot")
     conf.Set("irc.ident", "foobot")
     conf.Set("irc.name", "foobot")
     conf.Set("irc.pass", "baltycka")
@@ -32,6 +33,7 @@ func main() {
     conf.Set("net.server.socket", "localhost:6600")
     conf.Set("bot.cmdbuf", "10")
     conf.Set("bot.wrktimout", "120")
+    conf.Set("bot.pass", *pass)
 
     ircProto := protoimpl.NewIrcProto()
     netServerProto := protoimpl.NewNetServerProto()

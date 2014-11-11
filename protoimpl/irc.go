@@ -81,7 +81,7 @@ func (p *IrcProto) Register(i proto.Interpreter) {
             return
         }
         addr := line.Target()
-        log.TRACE.Printf("Got message, addr: %s, irc line: %s", addr, line)
+        /* log.TRACE.Printf("Got message, addr: %s, irc line: %s", addr, line) */
         msg := proto.Parse(text)
         msg.Addr = addr
         msg.User = line.Src

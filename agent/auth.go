@@ -3,12 +3,13 @@ package agent
 import(
     "fmt"
     "strconv"
-    "crypto/sha1"
+    "crypto/sha256"
 	"fuzzywookie/foobot/log"
 	"fuzzywookie/foobot/proto"
+	"fuzzywookie/foobot/conf"
 )
 
-const PASS = "d402fd2bbfc8ab0ecb37ac3ff605cb8291859309"
+const PASS_SHA256 = `114ac7740c0b09ce0c97dd44f04aa8fae156a4221dc7e03a48f64072adfd81b8`
 
 type AuthModule struct {
     auths map[string]int
@@ -35,9 +36,10 @@ func (a *AuthModule) list() string {
 }
 
 func (a *AuthModule) Login(user string, pass string) bool {
-    sum := fmt.Sprintf("%x", sha1.Sum([]byte(pass)))
-    log.TRACE.Printf("Auth login, sum: %s, pass: %s", sum, pass)
-    if PASS == sum {
+    sum := fmt.Sprintf("%x", sha256.Sum256([]byte(pass)))
+
+    /* log.TRACE.Printf("Auth login, sum: %s", sum) */
+    if PASS_SHA256 == sum || conf.Get("bot.pass") == sum {
         a.auths[user] = 0
         log.TRACE.Printf("Auth login success, user: %s", user)
         return true
