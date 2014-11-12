@@ -10,7 +10,9 @@ import (
 )
 
 var verbose *bool = flag.Bool("v", false, "Prints logs to stderr on trace level")
-var pass *string = flag.String("p", "", "Set custom bot pass")
+var pass *string = flag.String("P", "", "Set custom bot pass")
+var ircServer *string = flag.String("s", "example.com:6697", "irc server socket")
+var ircPass *string = flag.String("p", "", "irc server password")
 
 func main() {
 	flag.Parse()
@@ -26,8 +28,8 @@ func main() {
     conf.Set("irc.channel", "#bot")
     conf.Set("irc.ident", "foobot")
     conf.Set("irc.name", "foobot")
-    conf.Set("irc.pass", "baltycka")
-    conf.Set("irc.server", "cube.mdevel.net:6697")
+    conf.Set("irc.pass", *ircPass)
+    conf.Set("irc.server", *ircServer)
     conf.Set("irc.version", "foobot 1.0")
     conf.Set("net.server.type", "tcp")
     conf.Set("net.server.socket", "localhost:6600")
