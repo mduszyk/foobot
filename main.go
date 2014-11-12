@@ -16,7 +16,7 @@ func main() {
 	flag.Parse()
 
     if *verbose {
-        log.EnableStdout()
+        log.EnableStderr()
         log.SetLevel(log.LEVEL_TRACE)
     } else {
         godaemon.MakeDaemon(&godaemon.DaemonAttr{})

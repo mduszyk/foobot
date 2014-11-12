@@ -65,7 +65,7 @@ var INFO = Log(info)
 var WARN = Log(warn)
 var ERROR = Log(err)
 
-func EnableStdout() {
+func EnableStderr() {
     data.writer.SetWriter(io.MultiWriter(&buf, os.Stderr))
 }
 
@@ -108,17 +108,19 @@ func NewLogModule() *LogData {
 
 func (data *LogData) Handle(msg *proto.Msg) string {
     rsp := ""
-    if strings.HasPrefix(msg.Args, "level") {
-        chunks := strings.SplitN(msg.Args, " ", 2)
-        SetLevelStr(chunks[1])
-        rsp = "log level " + chunks[1]
-    } else {
-        n, err := strconv.Atoi(msg.Args)
-        if err == nil {
-            n = 1
-        }
-        rsp = Tail(n)
+
+    switch msg.Cmd {
+        case "tail":
+            n, err := strconv.Atoi(msg.Args)
+            if err == nil {
+                n = 1
+            }
+            rsp = Tail(n)
+        case "level":
+            SetLevelStr(msg.Args)
+            rsp = "log level " + msg.Args
     }
+
     return rsp
 }
 
