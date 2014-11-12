@@ -6,9 +6,9 @@ import(
 	"net"
     "net/textproto"
     "container/list"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/conf"
-	"fuzzywookie/foobot/proto"
+	"github.com/mduszyk/foobot/log"
+	"github.com/mduszyk/foobot/conf"
+	"github.com/mduszyk/foobot/proto"
 )
 
 type NetServerProto struct {

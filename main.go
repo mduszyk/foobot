@@ -2,11 +2,11 @@ package main
 
 import (
     "flag"
-    "fuzzywookie/foobot/log"
-    "fuzzywookie/foobot/conf"
-    "fuzzywookie/foobot/agent"
-    "fuzzywookie/foobot/protoimpl"
     "github.com/VividCortex/godaemon"
+    "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/conf"
+    "github.com/mduszyk/foobot/agent"
+    "github.com/mduszyk/foobot/protoimpl"
 )
 
 var verbose *bool = flag.Bool("v", false, "Prints logs to stderr on trace level")

@@ -3,10 +3,10 @@ package protoimpl
 import (
     "strings"
     "crypto/tls"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/conf"
-	"fuzzywookie/foobot/proto"
 	irc "github.com/fluffle/goirc/client"
+	"github.com/mduszyk/foobot/log"
+	"github.com/mduszyk/foobot/conf"
+	"github.com/mduszyk/foobot/proto"
 )
 
 type IrcProto struct {

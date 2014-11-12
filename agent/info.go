@@ -5,9 +5,9 @@ import(
     "runtime"
     "strconv"
     "strings"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/conf"
-	"fuzzywookie/foobot/proto"
+	"github.com/mduszyk/foobot/log"
+	"github.com/mduszyk/foobot/conf"
+	"github.com/mduszyk/foobot/proto"
 )
 
 type Info struct {

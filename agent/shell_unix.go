@@ -5,9 +5,9 @@ import(
     "os"
     "os/exec"
     "strings"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/conf"
     "github.com/kr/pty"
+	"github.com/mduszyk/foobot/log"
+	"github.com/mduszyk/foobot/conf"
 )
 
 const PS1 = "--FoObOt--"

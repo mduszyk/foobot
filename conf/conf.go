@@ -3,8 +3,8 @@ package conf
 import (
     "os"
     "path/filepath"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/proto"
+	"github.com/mduszyk/foobot/log"
+	"github.com/mduszyk/foobot/proto"
 )
 
 type ConfData map[string]string

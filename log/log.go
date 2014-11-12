@@ -8,7 +8,7 @@ import(
     "bytes"
     "strconv"
     "strings"
-	"fuzzywookie/foobot/proto"
+	"github.com/mduszyk/foobot/proto"
 )
 
 const LEVEL_TRACE = 0

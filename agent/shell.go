@@ -2,8 +2,8 @@ package agent
 
 import(
     "strings"
-	"fuzzywookie/foobot/log"
-	"fuzzywookie/foobot/proto"
+	"github.com/mduszyk/foobot/log"
+	"github.com/mduszyk/foobot/proto"
 )
 
 
