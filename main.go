@@ -5,7 +5,7 @@ import (
     "github.com/VividCortex/godaemon"
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/conf"
-    "github.com/mduszyk/foobot/agent"
+    "github.com/mduszyk/foobot/bot"
     "github.com/mduszyk/foobot/protoimpl"
 )
 
@@ -40,14 +40,14 @@ func main() {
     ircProto := protoimpl.NewIrcProto()
     netServerProto := protoimpl.NewNetServerProto()
 
-    a := agent.NewAgent()
+    a := bot.NewBot()
 
     a.AddModule(":conf", conf.NewConfModule())
     a.AddModule(":irc", ircProto)
-    a.AddModule(":info", agent.NewInfoModule())
+    a.AddModule(":info", bot.NewInfoModule())
     a.AddModule(":log", log.NewLogModule())
-    a.AddModule(":sh", agent.NewShellModule())
-    a.AddModule(":auth", agent.NewAuthModule())
+    a.AddModule(":sh", bot.NewShellModule())
+    a.AddModule(":auth", bot.NewAuthModule())
 
     a.AddProto("irc", ircProto)
     a.AddProto("net", netServerProto)

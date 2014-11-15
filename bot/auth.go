@@ -1,4 +1,4 @@
-package agent
+package bot
 
 import(
     "fmt"

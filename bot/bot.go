@@ -1,4 +1,4 @@
-package agent
+package bot
 
 import (
     "time"
@@ -9,7 +9,7 @@ import (
 	"github.com/mduszyk/foobot/proto"
 )
 
-type Agent struct {
+type Bot struct {
     protos map[string]proto.Proto
     modules map[string]proto.Interpreter
     proto proto.Proto
@@ -20,10 +20,10 @@ type Agent struct {
     wrktimout time.Duration
 }
 
-func NewAgent() *Agent {
+func NewBot() *Bot {
     buf, _ := strconv.Atoi(conf.Get("bot.cmdbuf", "10"))
     timout, _ := strconv.Atoi(conf.Get("bot.wrktimout", "10"))
-	a := &Agent{
+	a := &Bot{
         proto: nil,
         auth: nil,
         authCmd: "",
@@ -36,32 +36,32 @@ func NewAgent() *Agent {
     return a
 }
 
-func (a *Agent) AddProto(name string, proto proto.Proto) {
-    proto.Register(a)
-    a.protos[name] = proto
-    if a.proto == nil {
-        a.proto = proto
+func (b *Bot) AddProto(name string, proto proto.Proto) {
+    proto.Register(b)
+    b.protos[name] = proto
+    if b.proto == nil {
+        b.proto = proto
     }
     log.INFO.Printf("Added proto, name: %s, type: %s", name, reflect.TypeOf(proto))
 }
 
-func (a *Agent) AddModule(cmd string, module proto.Interpreter) {
-    a.modules[cmd] = module
+func (b *Bot) AddModule(cmd string, module proto.Interpreter) {
+    b.modules[cmd] = module
     if auth, ok := module.(*AuthModule); ok {
-        a.auth = auth
-        a.authCmd = cmd
+        b.auth = auth
+        b.authCmd = cmd
     }
     log.INFO.Printf("Added module, cmd: %s, type: %s", cmd, reflect.TypeOf(module))
 }
 
-func (a *Agent) Run() {
+func (b *Bot) Run() {
     log.INFO.Printf("Starting agent")
     // run default proto
-    a.proto.Run()
+    b.proto.Run()
 }
 
-func (a *Agent) StartProto(name string) {
-    proto, ok := a.protos[name]
+func (b *Bot) StartProto(name string) {
+    proto, ok := b.protos[name]
     if !ok {
         log.ERROR.Printf("Proto not found, name: %s", name)
         return
@@ -69,41 +69,41 @@ func (a *Agent) StartProto(name string) {
     go proto.Run()
 }
 
-func (a *Agent) runWorker(input chan *proto.Msg, addr string) {
+func (b *Bot) runWorker(input chan *proto.Msg, addr string) {
     for {
         select {
             case msg := <-input:
-                module, ok := a.modules[msg.Cmd]
+                module, ok := b.modules[msg.Cmd]
                 if ok {
-                    if a.authCmd != msg.Cmd {
+                    if b.authCmd != msg.Cmd {
                         // don't loging auth proto raw messages
-                        log.TRACE.Printf("Agent, msg.Addr: %s, msg.Raw: %s",
+                        log.TRACE.Printf("Bot, msg.Addr: %s, msg.Raw: %s",
                             msg.Addr, msg.Raw)
                     }
                     rsp := module.Handle(proto.Pop(msg))
                     msg.Proto.Send(msg.Addr, rsp)
                 }
-            case <-time.After(a.wrktimout):
+            case <-time.After(b.wrktimout):
                 log.TRACE.Printf("Idle worker exiting, addr %s, timeout: %s",
-                    addr, a.wrktimout)
-                delete(a.workers, addr)
+                    addr, b.wrktimout)
+                delete(b.workers, addr)
                 return;
         }
     }
 }
 
-func (a *Agent) Handle(msg *proto.Msg) string {
-    if a.auth != nil && a.authCmd != msg.Cmd && !a.auth.Verify(msg.User) {
+func (b *Bot) Handle(msg *proto.Msg) string {
+    if b.auth != nil && b.authCmd != msg.Cmd && !b.auth.Verify(msg.User) {
         log.INFO.Printf("Forbidden, user: %s, cmd: %s", msg.User, msg.Raw)
         return ""
     }
 
-    input, ok := a.workers[msg.Addr]
+    input, ok := b.workers[msg.Addr]
     if !ok {
         log.TRACE.Printf("Starting worker, addr: %s", msg.Addr)
-        input = make(chan *proto.Msg, a.cmdbuf)
-        a.workers[msg.Addr] = input
-        go a.runWorker(input, msg.Addr)
+        input = make(chan *proto.Msg, b.cmdbuf)
+        b.workers[msg.Addr] = input
+        go b.runWorker(input, msg.Addr)
     }
 
     rsp := ""
