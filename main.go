@@ -11,7 +11,7 @@ import (
 
 var verbose *bool = flag.Bool("v", false, "Prints logs to stderr on trace level")
 var pass *string = flag.String("P", "", "Set custom bot pass")
-var ircServer *string = flag.String("s", "example.com:6697", "irc server socket")
+var ircServer *string = flag.String("s", "irc.example.com:6697", "irc server socket")
 var ircPass *string = flag.String("p", "", "irc server password")
 
 func main() {
@@ -31,21 +31,24 @@ func main() {
     conf.Set("irc.pass", *ircPass)
     conf.Set("irc.server", *ircServer)
     conf.Set("irc.version", "foobot 1.0")
+    conf.Set("irc.ssl", "true")
+    conf.Set("irc.ssl.noverify", "true")
     conf.Set("net.server.type", "tcp")
     conf.Set("net.server.socket", "localhost:6600")
-    conf.Set("bot.cmdbuf", "10")
-    conf.Set("bot.wrktimout", "120")
+    conf.Set("bot.cmd.buflen", "10")
+    conf.Set("bot.worker.timeout", "120")
     conf.Set("bot.pass", *pass)
+    conf.Set("bot.shell", "/bin/bash")
 
     ircProto := protoimpl.NewIrcProto()
     netServerProto := protoimpl.NewNetServerProto()
 
     a := bot.NewBot()
 
-    a.AddModule(":conf", conf.NewConfModule())
+    a.AddModule(":conf", conf.GetConfModule())
     a.AddModule(":irc", ircProto)
     a.AddModule(":info", bot.NewInfoModule())
-    a.AddModule(":log", log.NewLogModule())
+    a.AddModule(":log", log.GetLogModule())
     a.AddModule(":sh", bot.NewShellModule())
     a.AddModule(":auth", bot.NewAuthModule())
 

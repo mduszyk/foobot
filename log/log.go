@@ -28,16 +28,10 @@ func (mw *MutableWriter) SetWriter(w io.Writer) {
     mw.writer = w
 }
 
-type LogData struct {
+type Logger struct {
     writer *MutableWriter
     level int
-}
-
-var buf bytes.Buffer
-
-var data = LogData {
-    writer: &MutableWriter{&buf},
-    level: LEVEL_INFO,
+    buf *bytes.Buffer
 }
 
 var levelMap = map[string]int{
@@ -45,6 +39,17 @@ var levelMap = map[string]int{
     "info": LEVEL_INFO,
     "warn": LEVEL_WARN,
     "error": LEVEL_ERROR,
+}
+
+var buf bytes.Buffer
+var instance = &Logger{
+    writer: &MutableWriter{&buf},
+    level: LEVEL_INFO,
+    buf: &buf,
+}
+
+func GetLogModule() *Logger {
+    return instance
 }
 
 type Log interface {
@@ -55,10 +60,10 @@ type nullLog struct{}
 func (l *nullLog) Printf(format string, v ...interface{}) {}
 
 var disabled nullLog
-var trace = log.New(data.writer, "TRACE: ", log.Ldate | log.Ltime | log.Lshortfile)
-var info = log.New(data.writer, "INFO : ", log.Ldate | log.Ltime | log.Lshortfile)
-var warn = log.New(data.writer, "WARN : ", log.Ldate | log.Ltime | log.Lshortfile)
-var err = log.New(data.writer, "ERROR: ", log.Ldate | log.Ltime | log.Lshortfile)
+var trace = log.New(instance.writer, "TRACE: ", log.Ldate | log.Ltime | log.Lshortfile)
+var info = log.New(instance.writer, "INFO : ", log.Ldate | log.Ltime | log.Lshortfile)
+var warn = log.New(instance.writer, "WARN : ", log.Ldate | log.Ltime | log.Lshortfile)
+var err = log.New(instance.writer, "ERROR: ", log.Ldate | log.Ltime | log.Lshortfile)
 
 var TRACE = Log(&disabled)
 var INFO = Log(info)
@@ -66,7 +71,7 @@ var WARN = Log(warn)
 var ERROR = Log(err)
 
 func EnableStderr() {
-    data.writer.SetWriter(io.MultiWriter(&buf, os.Stderr))
+    instance.writer.SetWriter(io.MultiWriter(&buf, os.Stderr))
 }
 
 func SetLevelStr(l string) {
@@ -74,23 +79,23 @@ func SetLevelStr(l string) {
 }
 
 func SetLevel(l int) {
-    data.level = l
-    if (LEVEL_TRACE >= data.level) {
+    instance.level = l
+    if (LEVEL_TRACE >= instance.level) {
         TRACE = trace
     } else {
         TRACE = &disabled
     }
-    if (LEVEL_INFO >= data.level) {
+    if (LEVEL_INFO >= instance.level) {
         INFO = info
     } else {
         INFO = &disabled
     }
-    if (LEVEL_WARN >= data.level) {
+    if (LEVEL_WARN >= instance.level) {
         WARN = warn
     } else {
         WARN = &disabled
     }
-    if (LEVEL_ERROR >= data.level) {
+    if (LEVEL_ERROR >= instance.level) {
         ERROR = err
     } else {
         ERROR = &disabled
@@ -99,14 +104,10 @@ func SetLevel(l int) {
 
 func Tail(n int) string {
     // TODO 
-    return buf.String()
+    return instance.buf.String()
 }
 
-func NewLogModule() *LogData {
-    return &data
-}
-
-func (data *LogData) Handle(msg *proto.Msg) string {
+func (l *Logger) Handle(msg *proto.Msg) string {
     rsp := ""
 
     switch msg.Cmd {

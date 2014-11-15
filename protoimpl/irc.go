@@ -2,6 +2,7 @@ package protoimpl
 
 import (
     "strings"
+    "strconv"
     "crypto/tls"
     irc "github.com/fluffle/goirc/client"
     "github.com/mduszyk/foobot/log"
@@ -18,13 +19,27 @@ type IrcProto struct {
 
 func NewIrcProto() *IrcProto {
     nick := conf.Get("irc.nick")
-    cfg := irc.NewConfig(nick, conf.Get("irc.ident", nick), conf.Get("irc.name", nick))
+    ssl, err := strconv.ParseBool(conf.Get("irc.ssl", "false"))
+    if err != nil {
+        log.ERROR.Printf("Incorrect value, irc.ssl: %s",
+            conf.Get("irc.ssl", "false"))
+        ssl = false
+    }
+    noverify, err := strconv.ParseBool(conf.Get("irc.ssl.noverify", "false"))
+    if err != nil {
+        log.ERROR.Printf("Incorrect value, irc.ssl.noverify: %s",
+            conf.Get("irc.ssl.noverify", "false"))
+        noverify = false
+    }
+
+    cfg := irc.NewConfig(nick, conf.Get("irc.ident", nick),
+        conf.Get("irc.name", nick))
     cfg.Version = conf.Get("irc.version", nick)
     cfg.QuitMessage = conf.Get("irc.quitmsg", "bye")
     cfg.Pass = conf.Get("irc.pass", "")
-    cfg.SSL = true
+    cfg.SSL = ssl
     cfg.SSLConfig = &tls.Config{}
-    cfg.SSLConfig.InsecureSkipVerify = true
+    cfg.SSLConfig.InsecureSkipVerify = noverify
     cfg.Server = conf.Get("irc.server")
     cfg.NewNick = func(n string) string { return n + "^" }
     cfg.Flood = true

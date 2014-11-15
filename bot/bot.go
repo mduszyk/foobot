@@ -17,12 +17,12 @@ type Bot struct {
     authCmd string
     workers map[string]chan *proto.Msg
     cmdbuf int
-    wrktimout time.Duration
+    timeout time.Duration
 }
 
 func NewBot() *Bot {
-    buf, _ := strconv.Atoi(conf.Get("bot.cmdbuf", "10"))
-    timout, _ := strconv.Atoi(conf.Get("bot.wrktimout", "10"))
+    buf, _ := strconv.Atoi(conf.Get("bot.cmd.buflen", "10"))
+    timeout, _ := strconv.Atoi(conf.Get("bot.worker.timeout", "10"))
     a := &Bot{
         proto: nil,
         auth: nil,
@@ -31,7 +31,7 @@ func NewBot() *Bot {
         modules: make(map[string]proto.Interpreter),
         workers: make(map[string]chan *proto.Msg),
         cmdbuf: buf,
-        wrktimout: time.Duration(timout) * time.Second,
+        timeout: time.Duration(timeout) * time.Second,
     }
     return a
 }
@@ -83,9 +83,9 @@ func (b *Bot) runWorker(input chan *proto.Msg, addr string) {
                     rsp := module.Handle(proto.Pop(msg))
                     msg.Proto.Send(msg.Addr, rsp)
                 }
-            case <-time.After(b.wrktimout):
+            case <-time.After(b.timeout):
                 log.TRACE.Printf("Idle worker exiting, addr %s, timeout: %s",
-                    addr, b.wrktimout)
+                    addr, b.timeout)
                 delete(b.workers, addr)
                 return;
         }

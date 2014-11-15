@@ -8,14 +8,15 @@ import (
 )
 
 type ConfData map[string]string
-var data = make(ConfData)
+
+var instance = make(ConfData)
 
 func Set(key string, value string) {
-    data[key] = value
+    instance[key] = value
 }
 
 func Get(key string, args ...string) string {
-    if val, ok := data[key]; ok {
+    if val, ok := instance[key]; ok {
         return val
     }
     return args[0]
@@ -37,25 +38,23 @@ func Init() {
     }
 
     Set("bot.bindir", GetBinDir())
-    Set("bot.shell", "/bin/bash")
-
     Set("irc.nick", hostname)
 }
 
 func Dump() string {
     rsp := ""
-    for k, v := range data {
+    for k, v := range instance {
         rsp += k + ": " + v + "\n"
     }
 
     return rsp
 }
 
-func NewConfModule() *ConfData {
-    return &data
+func GetConfModule() *ConfData {
+    return &instance
 }
 
-func (data *ConfData) Handle(msg *proto.Msg) string {
+func (cd *ConfData) Handle(msg *proto.Msg) string {
     rsp := ""
 
     switch msg.Cmd {

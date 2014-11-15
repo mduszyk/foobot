@@ -15,15 +15,10 @@ type AuthModule struct {
     auths map[string]int
 }
 
-var instance *AuthModule = nil
-
 func NewAuthModule() *AuthModule {
-    if instance == nil {
-        instance = &AuthModule{
-            auths: make(map[string]int),
-        }
+    return &AuthModule{
+        auths: make(map[string]int),
     }
-    return instance
 }
 
 func (a *AuthModule) list() string {
