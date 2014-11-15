@@ -16,6 +16,16 @@ const LEVEL_INFO = 1
 const LEVEL_WARN = 2
 const LEVEL_ERROR = 3
 
+var STR_TO_LEVEL = map[string]int{
+    "trace": LEVEL_TRACE,
+    "info": LEVEL_INFO,
+    "warn": LEVEL_WARN,
+    "error": LEVEL_ERROR,
+}
+
+var LEVEL_TO_STR = []string{"trace", "info", "warn", "error"}
+
+
 type MutableWriter struct {
     writer io.Writer
 }
@@ -79,15 +89,7 @@ type Logger struct {
     level int
 }
 
-var levelMap = map[string]int{
-    "trace": LEVEL_TRACE,
-    "info": LEVEL_INFO,
-    "warn": LEVEL_WARN,
-    "error": LEVEL_ERROR,
-}
-var levelStr = []string{"trace", "info", "warn", "error"}
-
-var buf = NewCircularWriter(128, 256) 
+var buf = NewCircularWriter(128, 256)
 var instance = &Logger{
     buf: buf,
     writer: &MutableWriter{buf},
@@ -121,7 +123,7 @@ func EnableStderr() {
 }
 
 func SetLevelStr(l string) {
-    SetLevel(levelMap[strings.ToLower(l)])
+    SetLevel(STR_TO_LEVEL[strings.ToLower(l)])
 }
 
 func SetLevel(l int) {
@@ -151,7 +153,7 @@ func SetLevel(l int) {
 func (l *Logger) info() string {
     rsp := "log.max_lines: " + strconv.Itoa(l.buf.maxLines) + "\n"
     rsp += "log.max_line_size: " + strconv.Itoa(l.buf.maxLineSize) + "\n"
-    rsp += "log.level: " + levelStr[l.level] + "\n"
+    rsp += "log.level: " + LEVEL_TO_STR[l.level] + "\n"
     return rsp
 }
 
