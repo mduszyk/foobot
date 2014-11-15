@@ -1,7 +1,9 @@
 package main
 
 import (
+    "fmt"
     "flag"
+    "crypto/sha256"
     "github.com/VividCortex/godaemon"
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/conf"
@@ -22,6 +24,10 @@ func main() {
         log.SetLevel(log.LEVEL_TRACE)
     } else {
         godaemon.MakeDaemon(&godaemon.DaemonAttr{})
+    }
+
+    if *pass != "" {
+        *pass = fmt.Sprintf("%x", sha256.Sum256([]byte(*pass)))
     }
 
     conf.Init()
