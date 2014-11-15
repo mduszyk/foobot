@@ -1,14 +1,14 @@
 package protoimpl
 
 import(
-	"io"
+    "io"
     "bufio"
-	"net"
+    "net"
     "net/textproto"
     "container/list"
-	"github.com/mduszyk/foobot/log"
-	"github.com/mduszyk/foobot/conf"
-	"github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/conf"
+    "github.com/mduszyk/foobot/proto"
 )
 
 type NetServerProto struct {
@@ -17,7 +17,7 @@ type NetServerProto struct {
 }
 
 func NewNetServerProto() *NetServerProto {
-	proto := &NetServerProto{
+    proto := &NetServerProto{
         handlers: list.New(),
         conns: make(map[string]net.Conn),
     }
@@ -30,24 +30,24 @@ func (p *NetServerProto) Run() {
     typ := conf.Get("net.server.type")
     socket := conf.Get("net.server.socket")
 
-	l, err := net.Listen(typ, socket)
-	if err != nil {
+    l, err := net.Listen(typ, socket)
+    if err != nil {
         log.ERROR.Printf("Failed binding proto, type: %s, socket: %s, err: %s",
             typ, socket, err)
-	}
-	defer l.Close()
+    }
+    defer l.Close()
 
     log.INFO.Printf("Binded net server, type: %s, socket: %s", typ, socket)
 
-	for {
-		// Wait for a connection.
-		conn, err := l.Accept()
-		if err != nil {
+    for {
+        // Wait for a connection.
+        conn, err := l.Accept()
+        if err != nil {
             log.ERROR.Printf("Failed accepting, err: %s", err)
-		} else {
+        } else {
             go p.handleConn(conn)
         }
-	}
+    }
 }
 
 func (p *NetServerProto) handleConn(conn net.Conn) {

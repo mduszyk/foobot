@@ -4,9 +4,9 @@ import (
     "time"
     "reflect"
     "strconv"
-	"github.com/mduszyk/foobot/log"
-	"github.com/mduszyk/foobot/conf"
-	"github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/conf"
+    "github.com/mduszyk/foobot/proto"
 )
 
 type Bot struct {
@@ -23,7 +23,7 @@ type Bot struct {
 func NewBot() *Bot {
     buf, _ := strconv.Atoi(conf.Get("bot.cmdbuf", "10"))
     timout, _ := strconv.Atoi(conf.Get("bot.wrktimout", "10"))
-	a := &Bot{
+    a := &Bot{
         proto: nil,
         auth: nil,
         authCmd: "",

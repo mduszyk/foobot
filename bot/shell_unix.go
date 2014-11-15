@@ -6,8 +6,8 @@ import(
     "os/exec"
     "strings"
     "github.com/kr/pty"
-	"github.com/mduszyk/foobot/log"
-	"github.com/mduszyk/foobot/conf"
+    "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/conf"
 )
 
 const PS1 = "--FoObOt--"

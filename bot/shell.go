@@ -2,8 +2,8 @@ package bot
 
 import(
     "strings"
-	"github.com/mduszyk/foobot/log"
-	"github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/proto"
 )
 
 

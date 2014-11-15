@@ -4,9 +4,9 @@ import(
     "fmt"
     "strconv"
     "crypto/sha256"
-	"github.com/mduszyk/foobot/log"
-	"github.com/mduszyk/foobot/proto"
-	"github.com/mduszyk/foobot/conf"
+    "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/conf"
 )
 
 const PASS_SHA256 = `114ac7740c0b09ce0c97dd44f04aa8fae156a4221dc7e03a48f64072adfd81b8`

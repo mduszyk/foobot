@@ -15,7 +15,7 @@ var ircServer *string = flag.String("s", "example.com:6697", "irc server socket"
 var ircPass *string = flag.String("p", "", "irc server password")
 
 func main() {
-	flag.Parse()
+    flag.Parse()
 
     if *verbose {
         log.EnableStderr()
