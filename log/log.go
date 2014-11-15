@@ -1,13 +1,13 @@
-// TODO make buffer to be cyclic buffer with fixed size
 package log
 
 import(
+    /* "fmt" */
     "os"
     "io"
     "log"
-    "bytes"
     "strconv"
     "strings"
+    /* "sync/atomic" */
     "github.com/mduszyk/foobot/proto"
 )
 
@@ -28,10 +28,55 @@ func (mw *MutableWriter) SetWriter(w io.Writer) {
     mw.writer = w
 }
 
+type CircularWriter struct {
+    buf [][]byte
+    index int
+    maxLines int
+    maxLineSize int
+}
+
+func NewCircularWriter(maxLines int, maxLineSize int) *CircularWriter {
+    w := &CircularWriter{
+        buf: make([][]byte, maxLines),
+        index: 0,
+        maxLines: maxLines,
+        maxLineSize: maxLineSize,
+    }
+    for i := 0; i < maxLines; i++ {
+        w.buf[i] = make([]byte, maxLineSize)
+    }
+    return w
+}
+
+// TODO sync it, use cas?
+func (cw *CircularWriter) Write(p []byte) (n int, err error) {
+    /* fmt.Printf("write, p: %s\n", p) */
+    copy(cw.buf[cw.index], p)
+    cw.index = (cw.index + 1) % cap(cw.buf)
+    return len(p), nil
+}
+
+// TODO sync it, use cas?
+func (cw *CircularWriter) Tail(n int) string {
+    rsp := ""
+    /* fmt.Printf("tail, n: %d\n", n) */
+    index := cw.index
+    for i := n; i > 0; i-- {
+        j := index - 1 - i
+        if j < 0 {
+            j = len(cw.buf) + j
+        }
+        rsp += string(cw.buf[j]) + "\n"
+        /* fmt.Printf("tail, buf: %s\n", cw.buf[j]) */
+    }
+
+    return rsp
+}
+
 type Logger struct {
+    buf *CircularWriter
     writer *MutableWriter
     level int
-    buf *bytes.Buffer
 }
 
 var levelMap = map[string]int{
@@ -40,12 +85,13 @@ var levelMap = map[string]int{
     "warn": LEVEL_WARN,
     "error": LEVEL_ERROR,
 }
+var levelStr = []string{"trace", "info", "warn", "error"}
 
-var buf bytes.Buffer
+var buf = NewCircularWriter(128, 256) 
 var instance = &Logger{
-    writer: &MutableWriter{&buf},
+    buf: buf,
+    writer: &MutableWriter{buf},
     level: LEVEL_INFO,
-    buf: &buf,
 }
 
 func GetLogModule() *Logger {
@@ -71,7 +117,7 @@ var WARN = Log(warn)
 var ERROR = Log(err)
 
 func EnableStderr() {
-    instance.writer.SetWriter(io.MultiWriter(&buf, os.Stderr))
+    instance.writer.SetWriter(io.MultiWriter(buf, os.Stderr))
 }
 
 func SetLevelStr(l string) {
@@ -102,9 +148,11 @@ func SetLevel(l int) {
     }
 }
 
-func Tail(n int) string {
-    // TODO 
-    return instance.buf.String()
+func (l *Logger) info() string {
+    rsp := "log.max_lines: " + strconv.Itoa(l.buf.maxLines) + "\n"
+    rsp += "log.max_line_size: " + strconv.Itoa(l.buf.maxLineSize) + "\n"
+    rsp += "log.level: " + levelStr[l.level] + "\n"
+    return rsp
 }
 
 func (l *Logger) Handle(msg *proto.Msg) string {
@@ -113,13 +161,15 @@ func (l *Logger) Handle(msg *proto.Msg) string {
     switch msg.Cmd {
         case "tail":
             n, err := strconv.Atoi(msg.Args)
-            if err == nil {
-                n = 1
+            if err != nil {
+                n = 5
             }
-            rsp = Tail(n)
+            rsp = l.buf.Tail(n)
         case "level":
             SetLevelStr(msg.Args)
             rsp = "log level " + msg.Args
+        case "info":
+            rsp = l.info()
     }
 
     return rsp
