@@ -57,12 +57,12 @@ func NewIrcProto() *IrcProto {
     }
 
     c.HandleFunc("connected", func(conn *irc.Conn, line *irc.Line) {
-        log.INFO.Printf("Connected to irc server, socket: %s", cfg.Server)
+        log.INFO.Printf("Connected, server: %s, msg: %s", cfg.Server, line)
         conn.Join(conf.Get("irc.channel", "#foobot"))
     })
 
     c.HandleFunc("disconnected", func(conn *irc.Conn, line *irc.Line) {
-        log.INFO.Printf("Disconnected from irc, server", cfg.Server)
+        log.INFO.Printf("Disconnected, server: %s, msg: %s", cfg.Server, line)
         proto.disconn <- true
     })
 
@@ -75,11 +75,11 @@ func (p *IrcProto) Run() {
         // connect to server
         if err := p.conn.Connect(); err != nil {
             log.ERROR.Printf("Connection error: %s", err)
-            time.Sleep(time.Second)
         } else {
             // wait on disconnect channel
             <-p.disconn
         }
+        time.Sleep(time.Second)
     }
 }
 

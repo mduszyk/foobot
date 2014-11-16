@@ -55,7 +55,6 @@ func (b *Bot) AddModule(cmd string, module proto.Interpreter) {
 }
 
 func (b *Bot) Run() {
-    log.INFO.Printf("Starting agent")
     // run default proto
     b.proto.Run()
 }
