@@ -1,6 +1,7 @@
 package protoimpl
 
 import (
+    "time"
     "strings"
     "strconv"
     "crypto/tls"
@@ -74,11 +75,11 @@ func (p *IrcProto) Run() {
         // connect to server
         if err := p.conn.Connect(); err != nil {
             log.ERROR.Printf("Connection error: %s", err)
-            return
+            time.Sleep(time.Second)
+        } else {
+            // wait on disconnect channel
+            <-p.disconn
         }
-
-        // wait on disconnect channel
-        <-p.disconn
     }
 }
 
