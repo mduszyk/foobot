@@ -13,7 +13,7 @@ import(
 const PS1 = "--FoObOt--"
 
 type Shell struct {
-    proc *exec.Cmd
+    cmd *exec.Cmd
     pty *os.File
     ps1 string
 }
@@ -33,9 +33,9 @@ func (sh *Shell) Start() {
         args = []string{}
     }
 
-    proc := exec.Command(chunks[0], args...)
+    cmd := exec.Command(chunks[0], args...)
 
-    fdm, err := pty.Start(proc)
+    fdm, err := pty.Start(cmd)
     if err != nil {
         log.ERROR.Printf("Failed starting shell pty: %s", err)
         return
@@ -43,10 +43,16 @@ func (sh *Shell) Start() {
 
     log.TRACE.Printf("Started shell: %s", shell)
 
-    sh.proc = proc
+    sh.cmd = cmd
     sh.pty = fdm
 
     sh.setupPrompt(PS1)
+}
+
+func (sh *Shell) Kill() {
+    if sh.cmd != nil {
+        sh.cmd.Process.Kill()
+    }
 }
 
 func (sh *Shell) setupPrompt(ps1 string) {
@@ -87,7 +93,7 @@ func readBetween(r io.Reader, token1 string, token2 string) string {
 }
 
 func (sh *Shell) Insert(line string) string {
-    if sh.proc == nil {
+    if sh.cmd == nil {
         sh.Start()
     }
 
