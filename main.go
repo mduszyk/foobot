@@ -16,6 +16,8 @@ var pass *string = flag.String("P", "", "Set custom bot pass")
 var ircServer *string = flag.String("s", "irc.example.com:6697", "irc server socket")
 var ircPass *string = flag.String("p", "", "irc server password")
 
+const VERSION = "foobot 1.0"
+
 func main() {
     flag.Parse()
 
@@ -36,7 +38,7 @@ func main() {
     conf.Set("irc.name", "foobot")
     conf.Set("irc.pass", *ircPass)
     conf.Set("irc.server", *ircServer)
-    conf.Set("irc.version", "foobot 1.0")
+    conf.Set("irc.version", VERSION)
     conf.Set("irc.ssl", "true")
     conf.Set("irc.ssl.noverify", "true")
     conf.Set("net.server.type", "tcp")
