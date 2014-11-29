@@ -53,8 +53,6 @@ type Shell struct {
     cmd *exec.Cmd
     pty *os.File
     ps1 string
-    fds *syscall.FdSet
-    timeout *syscall.Timeval
 }
 
 func NewShell() *Shell {
