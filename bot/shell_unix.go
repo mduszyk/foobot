@@ -92,6 +92,12 @@ func (sh *Shell) Kill() {
     }
 }
 
+func (sh *Shell) Interrupt() {
+    if sh.cmd != nil {
+        sh.cmd.Process.Signal(syscall.SIGINT)
+    }
+}
+
 func (sh *Shell) setupPrompt(ps1 string) {
     // setup shell prompt
     pscmd := "export PS1=\"" + ps1 + "\"\n"

@@ -43,6 +43,13 @@ func (m *ShellModule) Handle(msg *proto.Msg) string {
                 sh.Kill()
                 delete(m.shells, msg.Args)
             }
+        case ":int":
+            log.TRACE.Printf("Shell interrupt, addr: %s, args: %s", msg.Addr, msg.Args)
+            sh, ok := m.shells[msg.Args]
+            if ok {
+                sh.Kill()
+                delete(m.shells, msg.Args)
+            }
         default:
             sh, ok := m.shells[msg.Addr]
             if !ok {
