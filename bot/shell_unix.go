@@ -120,8 +120,8 @@ func readBetween(f *os.File, token1 string, token2 string) string {
     rfds := &syscall.FdSet{}
 
     timeout := &syscall.Timeval{}
-    timeout.Sec = int64(0)
-    timeout.Usec = int64(500000)
+    timeout.Sec = int32(0)
+    timeout.Usec = int32(500000)
 
     for {
         FD_ZERO(rfds)
