@@ -23,7 +23,8 @@ func runCommand(cmd string, args string) string {
 
     out, err := exec.Command(cmd, arg_list...).Output()
     if err != nil {
-        log.ERROR.Printf("Failed executing command %s, arg_list = %s, error: %s", cmd, arg_list, err)
+        log.ERROR.Printf(`Failed executing command %s,
+                                arg_list = %s, error: %s`, cmd, arg_list, err)
     } else {
         log.INFO.Printf("Command %s successfully executed.", cmd)
         log.TRACE.Printf("Command's output: %s", out)
