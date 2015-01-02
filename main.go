@@ -59,6 +59,7 @@ func main() {
     a.AddModule(":log", log.GetLogModule())
     a.AddModule(":sh", bot.NewShellModule())
     a.AddModule(":auth", bot.NewAuthModule())
+    a.AddModule(":run", bot.NewRunModule())
 
     a.AddProto("irc", ircProto)
     a.AddProto("net", netServerProto)
