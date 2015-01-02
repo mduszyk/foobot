@@ -17,11 +17,20 @@ func NewRunModule() *Run {
 func runCommand(cmd string, args string) string {
     log.TRACE.Printf("Command to execute: %s", cmd)
 
-    arg_list := strings.Split(args, " ");
-    log.TRACE.Printf("Argument list: %s", arg_list)
+    arg_list := strings.Fields(args);
     log.TRACE.Printf("Argument's lenght: %d", len(arg_list))
+    if len(arg_list) != 0 {
+        log.TRACE.Printf("Argument list%", arg_list)
+    }
 
-    out, err := exec.Command(cmd, arg_list...).Output()
+    var out []byte
+    var err error
+    if len(arg_list) == 0 {
+        out, err = exec.Command(cmd).CombinedOutput()
+    } else {
+        out, err = exec.Command(cmd, arg_list...).CombinedOutput()
+    }
+
     if err != nil {
         log.ERROR.Printf(`Failed executing command %s,
                                 arg_list = %s, error: %s`, cmd, arg_list, err)
