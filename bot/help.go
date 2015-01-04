@@ -17,7 +17,7 @@ func (m *HelpModule) CMD_(msg *proto.Msg) string {
     rsp := ""
     for k, v := range m.bot.GetModules() {
         rsp += k
-        methods := proto.CmdMethods(v)
+        methods := module.CmdMethods(v)
         if len(methods) > 0 {
             rsp += " (" + methods + ")"
         }
