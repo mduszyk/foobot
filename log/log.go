@@ -163,7 +163,7 @@ func (l *Logger) CMD_level(msg *proto.Msg) string {
     if len(msg.Args) > 0 {
         SetLevelStr(msg.Args)
     }
-    return "log level " + msg.Args
+    return "log.level: " + LEVEL_TO_STR[l.level]
 }
 
 func (l *Logger) CMD_info(msg *proto.Msg) string {
