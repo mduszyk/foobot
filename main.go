@@ -51,20 +51,21 @@ func main() {
     ircProto := protoimpl.NewIrcProto()
     netServerProto := protoimpl.NewNetServerProto()
 
-    a := bot.NewBot()
+    b := bot.NewBot()
 
-    a.AddModule(":conf", conf.GetConfModule())
-    a.AddModule(":irc", ircProto)
-    a.AddModule(":info", bot.NewInfoModule())
-    a.AddModule(":log", log.GetLogModule())
-    a.AddModule(":sh", bot.NewShellModule())
-    a.AddModule(":auth", bot.NewAuthModule())
-    a.AddModule(":run", bot.NewRunModule())
+    b.AddModule(":conf", conf.GetConfModule())
+    b.AddModule(":irc", ircProto)
+    b.AddModule(":info", bot.NewInfoModule())
+    b.AddModule(":log", log.GetLogModule())
+    b.AddModule(":sh", bot.NewShellModule())
+    b.AddModule(":auth", bot.NewAuthModule())
+    b.AddModule(":run", bot.NewRunModule())
+    b.AddModule(":help", bot.NewHelpModule(b))
 
-    a.AddProto("irc", ircProto)
-    a.AddProto("net", netServerProto)
+    b.AddProto("irc", ircProto)
+    b.AddProto("net", netServerProto)
 
-    a.StartProto("net")
+    b.StartProto("net")
 
-    a.Run()
+    b.Run()
 }

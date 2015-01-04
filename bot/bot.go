@@ -54,6 +54,10 @@ func (b *Bot) AddModule(cmd string, module proto.Interpreter) {
     log.INFO.Printf("Added module, cmd: %s, type: %s", cmd, reflect.TypeOf(module))
 }
 
+func (b *Bot) GetModules() map[string]proto.Interpreter {
+    return b.modules
+}
+
 func (b *Bot) Run() {
     // run default proto
     b.proto.Run()

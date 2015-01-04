@@ -59,6 +59,12 @@ func (i *Info) CMD_env(msg *proto.Msg) string {
     return info
 }
 
+func (i *Info) CMD_help(msg *proto.Msg) string {
+    text := "Info module returns info about host os.\n" 
+    text += "It also allows to get info about env variables.\n"
+    return text
+}
+
 func (i *Info) Handle(msg *proto.Msg) string {
-    return CallModule(i, msg)
+    return CallCmdMethod(i, msg)
 }

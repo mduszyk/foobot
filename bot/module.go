@@ -2,19 +2,21 @@ package bot
 
 import(
     "reflect"
+    "strings"
     "github.com/mduszyk/foobot/proto"
     "github.com/mduszyk/foobot/log"
 )
 
-func CallModule(module interface{}, msg *proto.Msg) string {
+const CMD_PREFIX = "CMD_"
+
+func CallCmdMethod(module interface{}, msg *proto.Msg) string {
     modValue := reflect.ValueOf(module)
 
-    prefix := "CMD_"
-    name := prefix + msg.Cmd
+    name := CMD_PREFIX + msg.Cmd
 
     method := modValue.MethodByName(name)
     if !method.IsValid() {
-        name = prefix
+        name = CMD_PREFIX
         method = modValue.MethodByName(name)
     }
 
@@ -29,3 +31,24 @@ func CallModule(module interface{}, msg *proto.Msg) string {
     return rsp
 
 }
+
+func CmdMethods(module interface{}) string {
+    modType := reflect.TypeOf(module)
+    rsp := ""
+    for i := 0; i < modType.NumMethod(); i++ {
+        methodName := modType.Method(i).Name
+        if strings.HasPrefix(methodName, CMD_PREFIX) {
+            if len(rsp) > 0 {
+                rsp += ", "
+            }
+            methodName = strings.Replace(methodName, CMD_PREFIX, "", -1)
+            if methodName == "" {
+                methodName = "\"\""
+            }
+            rsp += methodName
+        }
+    }
+
+    return rsp
+}
+
