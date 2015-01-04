@@ -4,7 +4,6 @@ import (
     "fmt"
     "flag"
     "crypto/sha256"
-    "github.com/VividCortex/godaemon"
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/conf"
     "github.com/mduszyk/foobot/bot"
@@ -25,7 +24,7 @@ func main() {
         log.EnableStderr()
         log.SetLevel(log.LEVEL_TRACE)
     } else {
-        godaemon.MakeDaemon(&godaemon.DaemonAttr{})
+        daemon()
     }
 
     if *pass != "" {
