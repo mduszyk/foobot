@@ -63,6 +63,6 @@ func (m *ShellModule) CMD__int(msg *proto.Msg) string {
 }
 
 func (m *ShellModule) Handle(msg *proto.Msg) string {
-    return CallCmdMethod(m, msg)
+    return proto.CallCmdMethod(m, msg)
 }
 

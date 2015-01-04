@@ -16,7 +16,7 @@ func (m *HelpModule) CMD_(msg *proto.Msg) string {
     rsp := ""
     for k, v := range m.bot.GetModules() {
         rsp += k
-        methods := CmdMethods(v)
+        methods := proto.CmdMethods(v)
         if len(methods) > 0 {
             rsp += " (" + methods + ")"
         }
@@ -27,5 +27,5 @@ func (m *HelpModule) CMD_(msg *proto.Msg) string {
 }
 
 func (m *HelpModule) Handle(msg *proto.Msg) string {
-    return CallCmdMethod(m, msg)
+    return proto.CallCmdMethod(m, msg)
 }

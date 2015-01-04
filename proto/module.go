@@ -1,15 +1,13 @@
-package bot
+package proto
 
 import(
     "reflect"
     "strings"
-    "github.com/mduszyk/foobot/proto"
-    "github.com/mduszyk/foobot/log"
 )
 
 const CMD_PREFIX = "CMD_"
 
-func CallCmdMethod(module interface{}, msg *proto.Msg) string {
+func CallCmdMethod(module interface{}, msg *Msg) string {
     modValue := reflect.ValueOf(module)
 
     name := CMD_PREFIX + msg.Cmd
@@ -23,7 +21,6 @@ func CallCmdMethod(module interface{}, msg *proto.Msg) string {
     rsp := ""
 
     if method.IsValid() {
-        log.TRACE.Printf("Calling cmd method: %s.%s", modValue.Type(), name)
         in := []reflect.Value{reflect.ValueOf(msg)}
         rsp = method.Call(in)[0].Interface().(string)
     }

@@ -46,7 +46,7 @@ func runCommand(cmd string, args string) string {
     return string(out[:])
 }
 
-func (r *Run) Handle(msg *proto.Msg) string {
+func (r *Run) CMD_(msg *proto.Msg) string {
     rsp := ""
 
     if len(msg.Cmd) == 0 {
@@ -57,3 +57,8 @@ func (r *Run) Handle(msg *proto.Msg) string {
 
     return rsp
 }
+
+func (r *Run) Handle(msg *proto.Msg) string {
+    return proto.CallCmdMethod(r, msg)
+}
+

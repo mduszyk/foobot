@@ -150,7 +150,22 @@ func SetLevel(l int) {
     }
 }
 
-func (l *Logger) info() string {
+func (l *Logger) CMD_tail(msg *proto.Msg) string {
+    n, err := strconv.Atoi(msg.Args)
+    if err != nil {
+        n = 5
+    }
+    return l.buf.Tail(n)
+}
+
+func (l *Logger) CMD_level(msg *proto.Msg) string {
+    if len(msg.Args) > 0 {
+        SetLevelStr(msg.Args)
+    }
+    return "log level " + msg.Args
+}
+
+func (l *Logger) CMD_info(msg *proto.Msg) string {
     rsp := "log.max_lines: " + strconv.Itoa(l.buf.maxLines) + "\n"
     rsp += "log.max_line_size: " + strconv.Itoa(l.buf.maxLineSize) + "\n"
     rsp += "log.level: " + LEVEL_TO_STR[l.level] + "\n"
@@ -158,22 +173,6 @@ func (l *Logger) info() string {
 }
 
 func (l *Logger) Handle(msg *proto.Msg) string {
-    rsp := ""
-
-    switch msg.Cmd {
-        case "tail":
-            n, err := strconv.Atoi(msg.Args)
-            if err != nil {
-                n = 5
-            }
-            rsp = l.buf.Tail(n)
-        case "level":
-            SetLevelStr(msg.Args)
-            rsp = "log level " + msg.Args
-        case "info":
-            rsp = l.info()
-    }
-
-    return rsp
+    return proto.CallCmdMethod(l, msg)
 }
 

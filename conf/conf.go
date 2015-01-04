@@ -54,17 +54,19 @@ func GetConfModule() *ConfData {
     return &instance
 }
 
+func (cd *ConfData) CMD_(msg *proto.Msg) string {
+    return Dump()
+}
+
+func (cd *ConfData) CMD_get(msg *proto.Msg) string {
+    return msg.Args + ": " + Get(msg.Args)
+}
+
+func (cd *ConfData) CMD_set(msg *proto.Msg) string {
+    Set(msg.Arg[0], msg.Arg[1])
+    return ""
+}
+
 func (cd *ConfData) Handle(msg *proto.Msg) string {
-    rsp := ""
-
-    switch msg.Cmd {
-        case "":
-            rsp = Dump()
-        case "get":
-            rsp = msg.Args + ": " + Get(msg.Args)
-        case "set":
-            Set(msg.Arg[0], msg.Arg[1])
-    }
-
-    return rsp
+    return proto.CallCmdMethod(cd, msg)
 }

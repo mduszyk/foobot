@@ -111,19 +111,31 @@ func (p *IrcProto) Register(i proto.Interpreter) {
     p.conn.HandleFunc("PRIVMSG", handler)
 }
 
-func (p *IrcProto) Handle(msg *proto.Msg) string {
-    switch msg.Cmd {
-        case "msg":
-            p.conn.Privmsg(msg.Arg[0], strings.Join(msg.Arg[1:], " "))
-        case "join":
-            p.conn.Join(msg.Arg[0])
-        case "part":
-            p.conn.Part(msg.Arg[0], "bye")
-        case "kick":
-            p.conn.Kick(msg.Arg[0], msg.Arg[1], "bye")
-        case "nick":
-            p.conn.Nick(msg.Arg[0])
-    }
-
+func (p *IrcProto) CMD_msg(msg *proto.Msg) string {
+    p.conn.Privmsg(msg.Arg[0], strings.Join(msg.Arg[1:], " "))
     return ""
+}
+
+func (p *IrcProto) CMD_join(msg *proto.Msg) string {
+    p.conn.Join(msg.Arg[0])
+    return ""
+}
+
+func (p *IrcProto) CMD_part(msg *proto.Msg) string {
+    p.conn.Part(msg.Arg[0], "bye")
+    return ""
+}
+
+func (p *IrcProto) CMD_kick(msg *proto.Msg) string {
+    p.conn.Kick(msg.Arg[0], msg.Arg[1], "bye")
+    return ""
+}
+
+func (p *IrcProto) CMD_nick(msg *proto.Msg) string {
+    p.conn.Nick(msg.Arg[0])
+    return ""
+}
+
+func (p *IrcProto) Handle(msg *proto.Msg) string {
+    return proto.CallCmdMethod(p, msg)
 }

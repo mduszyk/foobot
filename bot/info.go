@@ -66,5 +66,5 @@ func (i *Info) CMD_help(msg *proto.Msg) string {
 }
 
 func (i *Info) Handle(msg *proto.Msg) string {
-    return CallCmdMethod(i, msg)
+    return proto.CallCmdMethod(i, msg)
 }

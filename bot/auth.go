@@ -21,15 +21,6 @@ func NewAuthModule() *AuthModule {
     }
 }
 
-func (a *AuthModule) list() string {
-    rsp := ""
-    for k, v := range a.auths {
-        rsp += k + ": " + strconv.Itoa(v) + "\n"
-    }
-
-    return rsp
-}
-
 func (a *AuthModule) Login(user string, pass string) bool {
     sum := fmt.Sprintf("%x", sha256.Sum256([]byte(pass)))
 
@@ -63,28 +54,35 @@ func (a *AuthModule) Rm(user string) {
     }
 }
 
-func (a *AuthModule) Handle(msg *proto.Msg) string {
+func (a *AuthModule) CMD_(msg *proto.Msg) string {
+    return a.CMD_list(msg)
+}
+
+func (a *AuthModule) CMD_list(msg *proto.Msg) string {
+    log.TRACE.Printf("Auth list")
     rsp := ""
-
-    if !a.Verify(msg.User) {
-        a.Login(msg.User, msg.Raw)
-        return a.list()
-    }
-
-    switch msg.Cmd {
-        case "":
-            log.TRACE.Printf("Auth list")
-            rsp = a.list()
-        case "list":
-            log.TRACE.Printf("Auth list")
-            rsp = a.list()
-        case "add":
-            a.Add(msg.Args)
-            rsp = a.list()
-        case "rm":
-            a.Rm(msg.Args)
-            rsp = a.list()
+    for k, v := range a.auths {
+        rsp += k + ": " + strconv.Itoa(v) + "\n"
     }
 
     return rsp
+}
+
+func (a *AuthModule) CMD_add(msg *proto.Msg) string {
+    a.Add(msg.Args)
+    return a.CMD_list(msg)
+}
+
+func (a *AuthModule) CMD_rm(msg *proto.Msg) string {
+    a.Rm(msg.Args)
+    return a.CMD_list(msg)
+}
+
+func (a *AuthModule) Handle(msg *proto.Msg) string {
+    if !a.Verify(msg.User) {
+        a.Login(msg.User, msg.Raw)
+        return a.CMD_list(msg)
+    }
+
+    return proto.CallCmdMethod(a, msg)
 }
