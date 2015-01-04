@@ -1,6 +1,7 @@
 package bot
 
 type Shell struct {
+    cmd *exec.Cmd
 }
 
 func NewShell() *Shell {
