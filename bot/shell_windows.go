@@ -1,5 +1,9 @@
 package bot
 
+import (
+    "os/exec"
+)
+
 type Shell struct {
     cmd *exec.Cmd
 }
