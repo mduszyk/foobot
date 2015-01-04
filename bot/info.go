@@ -61,8 +61,10 @@ func (i *Info) CMD_env(msg *proto.Msg) string {
 }
 
 func (i *Info) CMD_help(msg *proto.Msg) string {
-    text := "Info module returns info about host os.\n" 
-    text += "It also allows to get info about env variables.\n"
+    text := "Info module returns information about environment\n" 
+    text += ":info\n"
+    text += ":info env\n"
+    text += ":info env PATH\n"
     return text
 }
 
