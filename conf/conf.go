@@ -5,6 +5,7 @@ import (
     "path/filepath"
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/module"
 )
 
 type ConfData map[string]string
@@ -68,5 +69,5 @@ func (cd *ConfData) CMD_set(msg *proto.Msg) string {
 }
 
 func (cd *ConfData) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(cd, msg)
+    return module.CallCmdMethod(cd, msg)
 }

@@ -9,6 +9,7 @@ import (
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/conf"
     "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/module"
 )
 
 type IrcProto struct {
@@ -137,5 +138,5 @@ func (p *IrcProto) CMD_nick(msg *proto.Msg) string {
 }
 
 func (p *IrcProto) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(p, msg)
+    return module.CallCmdMethod(p, msg)
 }

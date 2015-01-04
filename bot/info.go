@@ -8,6 +8,7 @@ import(
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/conf"
     "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/module"
 )
 
 type Info struct {
@@ -66,5 +67,5 @@ func (i *Info) CMD_help(msg *proto.Msg) string {
 }
 
 func (i *Info) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(i, msg)
+    return module.CallCmdMethod(i, msg)
 }

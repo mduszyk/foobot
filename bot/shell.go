@@ -4,6 +4,7 @@ import(
     "strings"
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/module"
 )
 
 
@@ -63,6 +64,6 @@ func (m *ShellModule) CMD__int(msg *proto.Msg) string {
 }
 
 func (m *ShellModule) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(m, msg)
+    return module.CallCmdMethod(m, msg)
 }
 

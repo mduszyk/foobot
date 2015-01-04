@@ -9,6 +9,7 @@ import(
     "strings"
     /* "sync/atomic" */
     "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/module"
 )
 
 const LEVEL_TRACE = 0
@@ -173,6 +174,6 @@ func (l *Logger) CMD_info(msg *proto.Msg) string {
 }
 
 func (l *Logger) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(l, msg)
+    return module.CallCmdMethod(l, msg)
 }
 

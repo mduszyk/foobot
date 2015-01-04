@@ -1,13 +1,14 @@
-package proto
+package module
 
 import(
     "reflect"
     "strings"
+    "github.com/mduszyk/foobot/proto"
 )
 
 const CMD_PREFIX = "CMD_"
 
-func CallCmdMethod(module interface{}, msg *Msg) string {
+func CallCmdMethod(module interface{}, msg *proto.Msg) string {
     modValue := reflect.ValueOf(module)
 
     name := CMD_PREFIX + msg.Cmd

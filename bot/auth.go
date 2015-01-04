@@ -7,6 +7,7 @@ import(
     "github.com/mduszyk/foobot/log"
     "github.com/mduszyk/foobot/proto"
     "github.com/mduszyk/foobot/conf"
+    "github.com/mduszyk/foobot/module"
 )
 
 const PASS_SHA256 = `114ac7740c0b09ce0c97dd44f04aa8fae156a4221dc7e03a48f64072adfd81b8`
@@ -84,5 +85,5 @@ func (a *AuthModule) Handle(msg *proto.Msg) string {
         return a.CMD_list(msg)
     }
 
-    return proto.CallCmdMethod(a, msg)
+    return module.CallCmdMethod(a, msg)
 }

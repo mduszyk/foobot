@@ -2,6 +2,7 @@ package bot
 
 import(
     "github.com/mduszyk/foobot/proto"
+    "github.com/mduszyk/foobot/module"
 )
 
 type HelpModule struct {
@@ -27,5 +28,5 @@ func (m *HelpModule) CMD_(msg *proto.Msg) string {
 }
 
 func (m *HelpModule) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(m, msg)
+    return module.CallCmdMethod(m, msg)
 }

@@ -5,6 +5,7 @@ import(
     "strings"
     "github.com/mduszyk/foobot/proto"
     "github.com/mduszyk/foobot/log"
+    "github.com/mduszyk/foobot/module"
 )
 
 type Run struct {
@@ -59,6 +60,6 @@ func (r *Run) CMD_(msg *proto.Msg) string {
 }
 
 func (r *Run) Handle(msg *proto.Msg) string {
-    return proto.CallCmdMethod(r, msg)
+    return module.CallCmdMethod(r, msg)
 }
 
