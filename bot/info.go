@@ -17,7 +17,7 @@ func NewInfoModule() *Info {
     return &Info{}
 }
 
-func basicInfo() string {
+func (i *Info) CMD_(msg *proto.Msg) string {
     hostname, err := os.Hostname()
     if err != nil {
         log.ERROR.Printf("Failed getting hostname, error: %s", err)
@@ -48,8 +48,9 @@ func basicInfo() string {
     return info
 }
 
-func envInfo(key string) string {
+func (i *Info) CMD_env(msg *proto.Msg) string {
     var info string
+    key := msg.Args
     if len(key) == 0 {
         info = strings.Join(os.Environ(), "\n")
     } else {
@@ -59,13 +60,5 @@ func envInfo(key string) string {
 }
 
 func (i *Info) Handle(msg *proto.Msg) string {
-    rsp := ""
-    switch msg.Cmd {
-        case "":
-            rsp = basicInfo()
-        case "env":
-            rsp = envInfo(msg.Args)
-    }
-
-    return rsp
+    return CallModule(i, msg)
 }
