@@ -1,5 +1,4 @@
-extend info module
-add help module
-support windows
+file upload/download
+socks proxy
 bindata
-modules talk to each other
+remote upgrade
